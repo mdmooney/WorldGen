@@ -67,6 +67,7 @@ namespace WorldGen
                     Random rnd = new Random();
 
                     List<Coords> unexpanded = new List<Coords>();
+                    List<Coords> expandAgain = new List<Coords>();
                     List<Coords> tempInvalids = new List<Coords>();
 
                     bool placedSeed = false;
@@ -84,9 +85,19 @@ namespace WorldGen
                         mass.seeded = true;
                     }
 
-                    while (mass.remainingHexes > 0
-                            && unexpanded.Count > 0)
+                    while (mass.remainingHexes > 0)
                     {
+                        if (unexpanded.Count == 0)
+                        {
+                            if (expandAgain.Count() > 0)
+                            {
+                                unexpanded = expandAgain;
+                            }
+                            else
+                            {
+                                break;
+                            }
+                        }
                         Coords expander = unexpanded[rnd.Next(unexpanded.Count)];
 
                         Dictionary<Hex.Side, Coords> adj = map.GetAllAdjacentCoords(expander);
@@ -127,6 +138,8 @@ namespace WorldGen
                         }
 
                         unexpanded.Remove(expander);
+                        if (roll < adj.Count)
+                            expandAgain.Add(expander);
                     }
 
                     foreach (Coords remainder in unexpanded)

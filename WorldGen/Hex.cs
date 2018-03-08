@@ -13,6 +13,7 @@ namespace WorldGen
         public enum HexType
         {
             Ocean,
+            Shore,
             Land,
             NumHexTypes
         }
@@ -90,6 +91,8 @@ namespace WorldGen
             {
                 case HexType.Ocean:
                     return Colors.SteelBlue;
+                case HexType.Shore:
+                    return Colors.SkyBlue;
                 case HexType.Land:
                     return Colors.Moccasin;
                 default:
