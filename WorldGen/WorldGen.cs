@@ -9,11 +9,12 @@ namespace WorldGen
     class WorldGenerator
     {
 
-        private struct AbstractLandmass
+        private class AbstractLandmass
         {
             public int totalHexes;
             public int remainingHexes;
             public bool seeded;
+            public List<Coords> hexes = new List<Coords>();
         }
 
         private HexMap map;
@@ -118,6 +119,7 @@ namespace WorldGen
                                     bool placed = map.PlaceLand(placeLoc);
                                     if (placed)
                                     {
+                                        mass.hexes.Add(placeLoc);
                                         mass.remainingHexes--;
                                         unexpanded.Add(placeLoc);
                                     }
@@ -148,6 +150,18 @@ namespace WorldGen
                         foreach (Coords toGoInstance in toGo.Values)
                         {
                             map.SetPlaceable(toGoInstance, false);
+                        }
+                    }
+
+                    foreach (Coords owned in mass.hexes)
+                    {
+                        if (map.BordersOcean(owned))
+                        {
+                            List<Coords> shoreHexes = map.GetAdjacentOceanHexes(owned);
+                            foreach (Coords shoreCoords in shoreHexes)
+                            {
+                                map.SetTypeAt(shoreCoords, Hex.HexType.Shore);
+                            }
                         }
                     }
                 }

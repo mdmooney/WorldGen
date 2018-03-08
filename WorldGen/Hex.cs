@@ -47,8 +47,6 @@ namespace WorldGen
             set { _type = value; }
         }
 
-
-
         private bool _canPlace = true;
         public bool CanPlace
         {

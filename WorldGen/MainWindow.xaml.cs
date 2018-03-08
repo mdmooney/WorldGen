@@ -42,6 +42,8 @@ namespace WorldGen
             wGen.Generate();
 
             DrawHexMap(testMap, 5.0);
+
+            this.SizeToContent = SizeToContent.WidthAndHeight;
         }
 
         private void DrawHexMap(HexMap map, Double scale = 10.0)

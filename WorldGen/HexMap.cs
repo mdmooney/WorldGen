@@ -96,6 +96,30 @@ namespace WorldGen
             }
         }
 
+        public bool BordersOcean(Coords coords)
+        {
+
+            Dictionary<Hex.Side, Coords> adj = GetAllAdjacentCoords(coords);
+            foreach(Coords adjCoords in adj.Values)
+            {
+                if (GetHexAt(adjCoords).type == Hex.HexType.Ocean)
+                    return true;
+            }
+            return false;
+        }
+
+        public List<Coords> GetAdjacentOceanHexes(Coords coords)
+        {
+            Dictionary<Hex.Side, Coords> adj = GetAllAdjacentCoords(coords);
+            List<Coords> rv = new List<Coords>();
+            foreach (Coords adjCoords in adj.Values)
+            {
+                if (GetHexAt(adjCoords).type == Hex.HexType.Ocean)
+                    rv.Add(adjCoords);
+            }
+            return rv;
+        }
+
         public bool CanPlaceAt(Coords coords)
         {
             if (coords.invalid) return false;
