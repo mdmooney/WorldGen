@@ -24,8 +24,8 @@ namespace WorldGen
         {
             InitializeComponent();
 
-            int maxX = 50;
-            int maxY = 30;
+            int maxX = 80;
+            int maxY = 50;
 
             Hex[,] testArray = new Hex[maxX, maxY];
             for (int i = 0; i < maxX; i++)
@@ -79,7 +79,7 @@ namespace WorldGen
             {
                 Stroke = System.Windows.Media.Brushes.Black,
                 Fill = new SolidColorBrush(color),
-                StrokeThickness = 1,
+                StrokeThickness = 0.5,
                 HorizontalAlignment = HorizontalAlignment.Left,
                 VerticalAlignment = VerticalAlignment.Top
             };

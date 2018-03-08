@@ -75,6 +75,11 @@ namespace WorldGen
 
         public bool PlaceLand(Coords coords)
         {
+            return PlaceLand(coords, Hex.HexType.Land);
+        }
+
+        public bool PlaceLand(Coords coords, Hex.HexType type)
+        {
             // todo: replace with actual validation function
             // to guarantee ranging
             if (coords.invalid) return false;
@@ -83,7 +88,7 @@ namespace WorldGen
                 Hex hex = GetHexAt(coords);
                 if (hex.CanPlace)
                 {
-                    SetTypeAt(coords, Hex.HexType.Land);
+                    SetTypeAt(coords, type);
                     hex.CanPlace = false;
                     return true;
                 }

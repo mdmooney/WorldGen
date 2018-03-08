@@ -18,32 +18,39 @@ namespace WorldGen
 
         private HexMap map;
         private List<AbstractLandmass> landmasses;
-        const double WORLD_RATIO = 0.29;
+        const double WORLD_RATIO = 0.30;
+        const int MAX_LANDMASSES = 10;
 
-        int worldTotal;
-        int overallTotal;
-        int overallRemaining;
 
         public WorldGenerator(HexMap map)
         {
+            Random rnd = new Random();
             this.map = map;
-            worldTotal = (map.width * map.height);
+            int worldTotal = (map.width * map.height);
             double overallTotalDec = (double)worldTotal;
-            overallTotal = (int)(overallTotalDec * WORLD_RATIO);
-            overallRemaining = overallTotal;
+            int totalLandHexes = (int)(overallTotalDec * WORLD_RATIO);
+            int remainingHexes = totalLandHexes;
+
             landmasses = new List<AbstractLandmass>();
-            int half = overallTotal / 2;
+            int numLandmasses = rnd.Next(1, MAX_LANDMASSES);
 
-            AbstractLandmass mass1 = new AbstractLandmass();
-            mass1.totalHexes = half;
-            mass1.remainingHexes = half;
-            half = (overallTotal - half);
-            AbstractLandmass mass2 = new AbstractLandmass();
-            mass2.totalHexes = half;
-            mass2.remainingHexes = half;
+            for (int i = 0; i < numLandmasses; i++)
+            {
+                AbstractLandmass landmass = new AbstractLandmass();
+                int massHexes;
+                if (i != numLandmasses - 1)
+                {
+                    massHexes = rnd.Next(1, remainingHexes / 2);
+                }
+                else
+                {
+                    massHexes = remainingHexes;
+                }
 
-            landmasses.Add(mass1);
-            landmasses.Add(mass2);
+                remainingHexes -= massHexes;
+                landmass.totalHexes = landmass.remainingHexes = massHexes;
+                landmasses.Add(landmass);
+            }
         }
 
         public void Generate()
@@ -67,7 +74,7 @@ namespace WorldGen
                         int x = rnd.Next(width);
                         int y = rnd.Next(height);
                         Coords seedCoords = new Coords(x, y);
-                        placedSeed = map.PlaceLand(seedCoords);
+                        placedSeed = map.PlaceLand(seedCoords, Hex.HexType.NumHexTypes);
                         if (placedSeed)
                         {
                             mass.remainingHexes--;

@@ -89,13 +89,12 @@ namespace WorldGen
             switch (_type)
             {
                 case HexType.Ocean:
-                    rv = Colors.SteelBlue;
-                    break;
+                    return Colors.SteelBlue;
                 case HexType.Land:
-                    rv = Colors.Moccasin;
-                    break;
+                    return Colors.Moccasin;
+                default:
+                    return Colors.Magenta;
             }
-            return rv;
         }
     }
 }
