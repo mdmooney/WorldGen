@@ -46,6 +46,7 @@ namespace WorldGen
                 {
                     massHexes = remainingHexes;
                 }
+                Console.WriteLine("Hexes in landmass " + i + ": " + massHexes);
 
                 remainingHexes -= massHexes;
                 landmass.totalHexes = landmass.remainingHexes = massHexes;
@@ -90,8 +91,9 @@ namespace WorldGen
 
                         Dictionary<Hex.Side, Coords> adj = map.GetAllAdjacentCoords(expander);
 
-                        int roll = rnd.Next(adj.Count + 1);
+                        int roll = rnd.Next(adj.Count + 1) + GetWeightedModifier(mass);
                         List<Hex.Side> contigs = map.FindNContiguousPlaceableSides(expander, roll);
+
                         // todo: reduce expected number of contigs and retry if we can't find enough contiguous hexes
                         if (contigs.Count > 0)
                         {
@@ -137,6 +139,26 @@ namespace WorldGen
                     }
                 }
             }
+        }
+
+        private static int GetWeightedModifier(AbstractLandmass mass)
+        {
+            double ratio = mass.remainingHexes / mass.totalHexes;
+            Random rnd = new Random();
+            int mod = 0;
+
+            while ((mod < 6)
+                    && (ratio > 0))
+            {
+                double comp = rnd.NextDouble();
+                if (comp <= ratio)
+                {
+                    mod++;
+                    ratio /= 2;
+                }
+                else break;
+            }
+            return mod;
         }
 
     }
