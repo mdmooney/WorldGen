@@ -60,7 +60,7 @@ namespace WorldGen
                 for (int j = 0; j < map.height; j++)
                 {
                     y += (offset.Y * 2);
-                    DrawHexagon(x, y, map.ColorAt(i,j), scale);
+                    DrawHexagon(x, y, map.ElevationColorAt(i,j), scale);
                 }
             }
         }

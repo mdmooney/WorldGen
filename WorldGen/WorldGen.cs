@@ -164,8 +164,14 @@ namespace WorldGen
                             }
                         }
                     }
+
                 }
             }
+        }
+
+        private void GenerateElevations()
+        {
+
         }
 
         private static int GetWeightedModifier(AbstractLandmass mass)

@@ -73,6 +73,11 @@ namespace WorldGen
             return map[x, y].GetColor();
         }
 
+        public Color ElevationColorAt(int x, int y)
+        {
+            return map[x, y].GetElevationColor();
+        }
+
         public bool PlaceLand(Coords coords)
         {
             return PlaceLand(coords, Hex.HexType.Land);

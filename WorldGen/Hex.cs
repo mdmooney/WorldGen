@@ -18,6 +18,15 @@ namespace WorldGen
             NumHexTypes
         }
 
+        public enum Elevation
+        {
+            Low,
+            LowMid,
+            Mid,
+            MidHigh,
+            High
+        }
+
         public enum Side
         {
             North,
@@ -47,6 +56,13 @@ namespace WorldGen
             set { _type = value; }
         }
 
+        private Elevation _elevation = Elevation.Low;
+        public Elevation elevation
+        {
+            get { return _elevation; }
+            set { _elevation = value; }
+        }
+
         private bool _canPlace = true;
         public bool CanPlace
         {
@@ -69,6 +85,14 @@ namespace WorldGen
         {
             _type = type;
         }
+
+        public bool IsLand()
+        {
+            return (_type != HexType.Ocean 
+                    && _type != HexType.Shore);
+        }
+
+
         public char CharDisplay()
         {
             switch (type)
@@ -84,7 +108,6 @@ namespace WorldGen
 
         public Color GetColor()
         {
-            Color rv = Colors.White;
             switch (_type)
             {
                 case HexType.Ocean:
@@ -93,6 +116,27 @@ namespace WorldGen
                     return Colors.SkyBlue;
                 case HexType.Land:
                     return Colors.Moccasin;
+                default:
+                    return Colors.Magenta;
+            }
+        }
+
+        public Color GetElevationColor()
+        {
+            if (_type == HexType.Ocean || _type == HexType.Shore)
+                return GetColor();
+            switch (_elevation)
+            {
+                case Elevation.Low:
+                    return Colors.SlateBlue;
+                case Elevation.LowMid:
+                    return Colors.Orchid;
+                case Elevation.Mid:
+                    return Colors.Tomato;
+                case Elevation.MidHigh:
+                    return Colors.Gold;
+                case Elevation.High:
+                    return Colors.LawnGreen;
                 default:
                     return Colors.Magenta;
             }
