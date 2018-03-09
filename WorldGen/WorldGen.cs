@@ -60,138 +60,28 @@ namespace WorldGen
             for (int i = 0; i < landmasses.Count; i++)
             {
                 AbstractLandmass mass = landmasses[i];
-                if (!mass.seeded)
+                List<Coords> allCoords = map.GetAllCoords();
+                LandmassExpander lEx = new LandmassExpander(map);
+                mass.hexes = lEx.Expand(allCoords, mass.totalHexes);
+                
+                foreach (Coords owned in mass.hexes)
                 {
-                    int width = map.width;
-                    int height = map.height;
-
-                    Random rnd = new Random();
-
-                    List<Coords> unexpanded = new List<Coords>();
-                    List<Coords> expandAgain = new List<Coords>();
-                    List<Coords> tempInvalids = new List<Coords>();
-
-                    bool placedSeed = false;
-                    while (!placedSeed)
+                    if (map.BordersOcean(owned))
                     {
-                        int x = rnd.Next(width);
-                        int y = rnd.Next(height);
-                        Coords seedCoords = new Coords(x, y);
-                        placedSeed = map.PlaceLand(seedCoords, Hex.HexType.NumHexTypes);
-                        if (placedSeed)
+                        List<Coords> shoreHexes = map.GetAdjacentOceanHexes(owned);
+                        foreach (Coords shoreCoords in shoreHexes)
                         {
-                            mass.remainingHexes--;
-                            unexpanded.Add(seedCoords);
-                        }
-                        mass.seeded = true;
-                    }
-
-                    while (mass.remainingHexes > 0)
-                    {
-                        if (unexpanded.Count == 0)
-                        {
-                            if (expandAgain.Count() > 0)
-                            {
-                                unexpanded = expandAgain;
-                            }
-                            else
-                            {
-                                break;
-                            }
-                        }
-                        Coords expander = unexpanded[rnd.Next(unexpanded.Count)];
-
-                        Dictionary<Hex.Side, Coords> adj = map.GetAllAdjacentCoords(expander);
-
-                        int roll = rnd.Next(adj.Count + 1) + GetWeightedModifier(mass);
-                        List<Hex.Side> contigs = map.FindNContiguousPlaceableSides(expander, roll);
-
-                        // todo: reduce expected number of contigs and retry if we can't find enough contiguous hexes
-                        if (contigs.Count > 0)
-                        {
-                            Hex.Side placeSide = contigs[rnd.Next(contigs.Count)];
-                            int count = 0;
-                            while (count < roll)
-                            {
-                                if (adj.ContainsKey(placeSide))
-                                {
-                                    Coords placeLoc = adj[placeSide];
-                                    bool placed = map.PlaceLand(placeLoc);
-                                    if (placed)
-                                    {
-                                        mass.hexes.Add(placeLoc);
-                                        mass.remainingHexes--;
-                                        unexpanded.Add(placeLoc);
-                                    }
-                                }
-                                placeSide = Hex.RotateSideClockwise(placeSide);
-                                count++;
-                            }
-
-                            while (count < 6)
-                            {
-                                if (adj.ContainsKey(placeSide))
-                                {
-                                    Coords invalidatedSide = adj[placeSide];
-                                }
-                                placeSide = Hex.RotateSideClockwise(placeSide);
-                                count++;
-                            }
-                        }
-
-                        unexpanded.Remove(expander);
-                        if (roll < adj.Count)
-                            expandAgain.Add(expander);
-                    }
-
-                    foreach (Coords remainder in unexpanded)
-                    {
-                        Dictionary<Hex.Side, Coords> toGo = map.GetPlaceableAdjacentCoords(remainder);
-                        foreach (Coords toGoInstance in toGo.Values)
-                        {
-                            map.SetPlaceable(toGoInstance, false);
+                            map.SetTypeAt(shoreCoords, Hex.HexType.Shore);
                         }
                     }
-
-                    foreach (Coords owned in mass.hexes)
-                    {
-                        if (map.BordersOcean(owned))
-                        {
-                            List<Coords> shoreHexes = map.GetAdjacentOceanHexes(owned);
-                            foreach (Coords shoreCoords in shoreHexes)
-                            {
-                                map.SetTypeAt(shoreCoords, Hex.HexType.Shore);
-                            }
-                        }
-                    }
-
                 }
+
             }
         }
 
         private void GenerateElevations()
         {
 
-        }
-
-        private static int GetWeightedModifier(AbstractLandmass mass)
-        {
-            double ratio = mass.remainingHexes / mass.totalHexes;
-            Random rnd = new Random();
-            int mod = 0;
-
-            while ((mod < 6)
-                    && (ratio > 0))
-            {
-                double comp = rnd.NextDouble();
-                if (comp <= ratio)
-                {
-                    mod++;
-                    ratio /= 2;
-                }
-                else break;
-            }
-            return mod;
         }
 
     }

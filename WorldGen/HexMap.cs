@@ -213,6 +213,19 @@ namespace WorldGen
             return coords;
         }
 
+        public List<Coords> GetAllCoords()
+        {
+            List<Coords> rv = new List<Coords>();
+            for (int i = 0; i < map.GetLength(0); i++)
+            {
+                for (int j = 0; j < map.GetLength(1); j++)
+                {
+                    rv.Add(new Coords(i, j));
+                }
+            }
+            return rv;
+        }
+
         public Coords GetAdjacentCoords(int x, int y, Hex.Side side)
         {
             int upShift = 0;
