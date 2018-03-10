@@ -13,13 +13,12 @@ namespace WorldGen
         public HeightExpander(HexMap map, int pass) : base(map)
         {
             _elevation = (Hex.Elevation)pass;
+            Console.WriteLine("Elevation: " + _elevation);
         }
 
         protected override bool CanExpandTo(Coords coords)
         {
             return _map.GetElevationAt(coords) < _elevation;
-            Hex.Elevation step = _elevation - 1;
-            return (_map.GetElevationAt(coords) == step);
         }
 
         protected override void FinishAdjacentUnexpanded(Coords coords)
@@ -30,6 +29,7 @@ namespace WorldGen
 
         protected override bool ModHex(Coords coords)
         {
+            if (!CanExpandTo(coords)) return false;
             return (_map.Raise(coords));
         }
     }

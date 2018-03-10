@@ -79,13 +79,13 @@ namespace WorldGen
                 }
 
                 // Elevation
-                int eleSteps = rnd.Next(1, 5);
+                int passes = rnd.Next(1, 5);
                 List<Coords> eleHexes = new List<Coords>(mass.hexes);
-
                 int range = eleHexes.Count;
-                for (int pass = 1; pass <= eleSteps; pass++)
+
+                for (int pass = 1; pass <= passes; pass++)
                 {
-                    int toElevate = rnd.Next(range);
+                    int toElevate = rnd.Next(range / 5, (int)(range * 0.75));
                     if (toElevate == 0) break;
 
                     List<Coords> elevatedOnThisPass = new List<Coords>(eleHexes);
@@ -102,8 +102,7 @@ namespace WorldGen
                     }
 
                     range = elevatedOnThisPass.Count;
-
-                    //eleHexes = elevatedOnThisPass;
+                    eleHexes = elevatedOnThisPass;
                 }
             }
         }

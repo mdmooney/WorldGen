@@ -49,9 +49,12 @@ namespace WorldGen
 
             // Select a valid hex at random to start from
             bool placedSeed = false;
-            while (!placedSeed)
+            int attempts = 0;
+            int totalValidHexes = validHexes.Count;
+            while (!placedSeed 
+                    && (attempts < totalValidHexes))
             {
-                int i = rnd.Next(validHexes.Count);
+                int i = rnd.Next(totalValidHexes);
                 Coords seedCoords = validHexes[i];
                 placedSeed = ModHex(seedCoords);
                 if (placedSeed)
@@ -59,6 +62,7 @@ namespace WorldGen
                     _remainingHexes--;
                     unexpanded.Add(seedCoords);
                 }
+                else attempts++;
             }
 
             while (_remainingHexes > 0)
