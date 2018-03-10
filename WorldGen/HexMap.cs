@@ -50,6 +50,13 @@ namespace WorldGen
             else return map[coords.x, coords.y];
         }
 
+        public Hex.Elevation GetElevationAt(Coords coords)
+        {
+            if (coords.invalid) return Hex.Elevation.Low;
+
+            else return GetHexAt(coords).elevation;
+        }
+
         public void SetTypeAt(int x, int y, Hex.HexType type)
         {
             map[x, y].type = type;
@@ -168,6 +175,17 @@ namespace WorldGen
         {
             Hex hex = GetHexAt(coords);
             hex.CanPlace = placeable;
+        }
+
+        public bool Raise(Coords coords)
+        {
+            Hex hex = GetHexAt(coords);
+            if (hex.elevation < Hex.Elevation.High)
+            {
+                hex.elevation++;
+                return true;
+            }
+            return false;
         }
 
         public Dictionary<Hex.Side, Coords> GetAllAdjacentCoords(Coords coords)

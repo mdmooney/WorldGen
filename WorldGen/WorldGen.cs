@@ -57,13 +57,15 @@ namespace WorldGen
 
         public void Generate()
         {
+            Random rnd = new Random();
             for (int i = 0; i < landmasses.Count; i++)
             {
                 AbstractLandmass mass = landmasses[i];
                 List<Coords> allCoords = map.GetAllCoords();
                 LandmassExpander lEx = new LandmassExpander(map);
                 mass.hexes = lEx.Expand(allCoords, mass.totalHexes);
-                
+                mass.totalHexes = mass.hexes.Count;
+
                 foreach (Coords owned in mass.hexes)
                 {
                     if (map.BordersOcean(owned))
@@ -76,13 +78,34 @@ namespace WorldGen
                     }
                 }
 
+                // Elevation
+                int eleSteps = rnd.Next(1, 5);
+                List<Coords> eleHexes = new List<Coords>(mass.hexes);
+
+                int range = eleHexes.Count;
+                for (int pass = 1; pass <= eleSteps; pass++)
+                {
+                    int toElevate = rnd.Next(range);
+                    if (toElevate == 0) break;
+
+                    List<Coords> elevatedOnThisPass = new List<Coords>(eleHexes);
+
+                    int seedPoints = rnd.Next(1, 5);
+                    for (int seedPoint = 0; seedPoint < seedPoints; seedPoint++)
+                    {
+                        if (toElevate <= 0) break;
+                        int elevating = rnd.Next(1, toElevate);
+                        HeightExpander hEx = new HeightExpander(map, pass);
+                        List<Coords> tempHexes = hEx.Expand(eleHexes, elevating);
+                        toElevate -= tempHexes.Count;
+                        elevatedOnThisPass.AddRange(tempHexes);
+                    }
+
+                    range = elevatedOnThisPass.Count;
+
+                    //eleHexes = elevatedOnThisPass;
+                }
             }
         }
-
-        private void GenerateElevations()
-        {
-
-        }
-
     }
 }

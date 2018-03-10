@@ -25,7 +25,6 @@ namespace WorldGen
 
         protected abstract bool CanExpandTo(Coords coords);
         protected abstract bool ModHex(Coords coords);
-        protected abstract int RollModifier();
         protected abstract void FinishAdjacentUnexpanded(Coords coords);
 
         public HexExpander(HexMap map)
@@ -160,7 +159,7 @@ namespace WorldGen
 
         private Dictionary<Hex.Side, Coords> GetFilteredAdjacency(Coords coords)
         {
-            
+
             Dictionary<Hex.Side, Coords> allAdjacent = _map.GetAllAdjacentCoords(coords);
 
             Dictionary<Hex.Side, Coords> rv 
@@ -168,6 +167,26 @@ namespace WorldGen
                                                          .ToDictionary(x => x.Key, x => x.Value);
 
             return rv;
+        }
+
+        protected virtual int RollModifier()
+        {
+            double ratio = _remainingHexes / _totalHexes;
+            Random rnd = new Random();
+            int mod = 0;
+
+            while ((mod < 6)
+                    && (ratio > 0))
+            {
+                double comp = rnd.NextDouble();
+                if (comp <= ratio)
+                {
+                    mod++;
+                    ratio /= 2;
+                }
+                else break;
+            }
+            return mod;
         }
 
     }
