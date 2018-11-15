@@ -10,6 +10,8 @@ namespace WorldGen
     class Hex
     {
 
+        public const int SIDES = 6;
+
         public enum HexType
         {
             Ocean,
@@ -34,7 +36,8 @@ namespace WorldGen
             Southeast,
             South,
             Southwest,
-            Northwest
+            Northwest,
+            Nil
         }
 
         public static Side RotateSideCounterclockwise(Side side)

@@ -146,29 +146,10 @@ namespace WorldGen
             }
         }
 
-        // todo: add memoization to this method
-        public List<Hex.Side> FindNContiguousPlaceableSides(Coords coords, int n)
+        public bool IsRiverAt(Coords coords)
         {
-            if (n > 6) n = 6;
-            List<Hex.Side> goodSides = new List<Hex.Side>();
-
-            Dictionary<Hex.Side, Coords> allPlaceable = GetPlaceableAdjacentCoords(coords);
-            foreach (Hex.Side side in allPlaceable.Keys)
-            {
-                int count = 1;
-                Hex.Side checkSide = Hex.RotateSideClockwise(side);
-                while (allPlaceable.ContainsKey(side) && count < 6)
-                {
-                    count++;
-                    checkSide = Hex.RotateSideClockwise(side);
-                }
-                if (count >= n)
-                {
-                    goodSides.Add(side);
-                }
-            }
-
-            return goodSides;
+            // not yet implemented
+            return false;
         }
 
         public void SetPlaceable(Coords coords, bool placeable)
@@ -231,6 +212,22 @@ namespace WorldGen
             return coords;
         }
 
+        public bool IsAdjacent(Coords a, Coords b)
+        {
+            var allAdj = GetAllAdjacentCoords(a);
+            return (allAdj.ContainsValue(b));
+        }
+
+        public Hex.Side GetAdjacentSide(Coords reference, Coords check)
+        {
+            for (Hex.Side side = Hex.Side.North; side < Hex.Side.Nil; side++)
+            {
+                if (GetAdjacentCoords(reference, side) == check)
+                    return side;
+            }
+            return Hex.Side.Nil;
+        }
+
         public List<Coords> GetAllCoords()
         {
             List<Coords> rv = new List<Coords>();
@@ -242,6 +239,11 @@ namespace WorldGen
                 }
             }
             return rv;
+        }
+
+        public Coords GetAdjacentCoords(Coords coords, Hex.Side side)
+        {
+            return GetAdjacentCoords(coords.x, coords.y, side);
         }
 
         public Coords GetAdjacentCoords(int x, int y, Hex.Side side)

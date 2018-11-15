@@ -13,7 +13,6 @@ namespace WorldGen
         {
             public int totalHexes;
             public int remainingHexes;
-            public bool seeded;
             public List<Coords> hexes = new List<Coords>();
         }
 
@@ -66,6 +65,7 @@ namespace WorldGen
                 mass.hexes = lEx.Expand(allCoords, mass.totalHexes);
                 mass.totalHexes = mass.hexes.Count;
 
+                // Create shore/shallow water hexes adjacent to each hex of this landmass
                 foreach (Coords owned in mass.hexes)
                 {
                     if (map.BordersOcean(owned))
@@ -82,7 +82,7 @@ namespace WorldGen
                 int passes = rnd.Next(1, 5);
                 List<Coords> eleHexes = new List<Coords>(mass.hexes);
                 int range = eleHexes.Count;
-
+                
                 for (int pass = 1; pass <= passes; pass++)
                 {
                     int toElevate = rnd.Next(range / 5, (int)(range * 0.75));

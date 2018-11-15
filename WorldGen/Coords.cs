@@ -5,17 +5,30 @@ using System.Text;
 
 namespace WorldGen
 {
-    struct Coords
+    class Coords
     {
         public int x;
         public int y;
         public bool invalid;
+
+        public Coords()
+        {
+            x = y = 0;
+            invalid = false;
+        }
 
         public Coords(int x, int y)
         {
             this.x = x;
             this.y = y;
             invalid = false;
+        }
+
+        public Coords(Coords other)
+        {
+            this.x = other.x;
+            this.y = other.y;
+            this.invalid = other.invalid;
         }
 
         public bool Equals(Coords other)
@@ -46,5 +59,6 @@ namespace WorldGen
         {
             return !c1.Equals(c2);
         }
+
     }
 }

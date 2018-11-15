@@ -27,17 +27,7 @@ namespace WorldGen
             int maxX = 80;
             int maxY = 50;
 
-            Hex[,] testArray = new Hex[maxX, maxY];
-            for (int i = 0; i < maxX; i++)
-            {
-                for (int j = 0; j < maxY; j++)
-                {
-                    testArray[i, j] = new Hex();
-                }
-            }
-
             HexMap testMap = new HexMap(maxX, maxY);
-            //testMap.PlaceLand(new Coords(maxX/2, 0));
             WorldGenerator wGen = new WorldGenerator(testMap);
             wGen.Generate();
 
