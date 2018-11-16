@@ -118,7 +118,7 @@ namespace WorldGen
                     }
                 }
 
-                // Pick a hex to expand from
+                // Pick a hex to expand at random from the unexpanded list
                 Coords startPoint = unexpanded[rnd.Next(unexpanded.Count)];
                 Dictionary<Hex.Side, Coords> adj = GetFilteredAdjacency(startPoint);
 
@@ -127,7 +127,6 @@ namespace WorldGen
                 int roll = RollBaseExpansion(adj.Count + 1) + RollModifier();
                 List<Hex.Side> contigs = FindNContiguousValidSides(startPoint, roll);
 
-                // todo: reduce expected number of contigs and retry if we can't find enough contiguous hexes
                 if (contigs.Count > 0)
                 {
                     Hex.Side placeSide = contigs[rnd.Next(contigs.Count)];
@@ -231,6 +230,17 @@ namespace WorldGen
             return rv;
         }
 
+        /* <summary>
+         * Generates a modifier to add onto the base roll, used to determine the number of sides
+         * to expand out to from a starting hex.
+         * 
+         * This modifier is random, but will likely be higher when there are more hexes that
+         * have not yet been expanded to. This is done to favour a more blob-shaped core with
+         * branches/peninsulae as generation goes on.
+         * </summary>
+         * <return>A modifier not exceeding Hex.SIDES, likely higher when there are more hexes
+         * that have not yet been placed.</return>
+         */
         protected virtual int RollModifier()
         {
             double ratio = _remainingHexes / _totalHexes;
@@ -251,6 +261,10 @@ namespace WorldGen
             return mod;
         }
 
+        /* <summary>
+         * Randomly determine how many sides to expand out into from a starting hex.
+         * </summary>
+         */
         protected virtual int RollBaseExpansion(int adjCount)
         {
             Random rnd = new Random();
