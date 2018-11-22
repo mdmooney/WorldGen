@@ -57,6 +57,7 @@
     <Compile Include="HeightExpander.cs" />
     <Compile Include="HexExpander.cs" />
     <Compile Include="LandmassExpander.cs" />
+    <Compile Include="NameGenerator.cs" />
     <Compile Include="River.cs" />
     <Compile Include="RiverExpander.cs" />
     <Compile Include="WorldGen.cs" />
