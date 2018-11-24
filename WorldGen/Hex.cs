@@ -52,6 +52,27 @@ namespace WorldGen
             else return side + 1;
         }
 
+        public static Side OppositeSide(Side side)
+        {
+            switch (side)
+            {
+                case Side.North:
+                    return Side.South;
+                case Side.Northeast:
+                    return Side.Southwest;
+                case Side.Southeast:
+                    return Side.Northwest;
+                case Side.South:
+                    return Side.North;
+                case Side.Southwest:
+                    return Side.Northeast;
+                case Side.Northwest:
+                    return Side.Southeast;
+                default:
+                    return side;
+            }
+        }
+
         private HexType _type;
         public HexType type
         {
@@ -79,6 +100,8 @@ namespace WorldGen
             }
         }
 
+        public RiverSegment MainRiverSegment { get; set; }
+
         public Hex()
         {
             _type = HexType.Ocean;
@@ -93,6 +116,11 @@ namespace WorldGen
         {
             return (_type != HexType.Ocean 
                     && _type != HexType.Shore);
+        }
+
+        public bool HasRiver()
+        {
+            return MainRiverSegment != null;
         }
 
 

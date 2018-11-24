@@ -13,7 +13,6 @@ namespace WorldGen
         public HeightExpander(HexMap map, int pass) : base(map)
         {
             _elevation = (Hex.Elevation)pass;
-            Console.WriteLine("Elevation: " + _elevation);
         }
 
         protected override bool CanExpandTo(Coords coords)

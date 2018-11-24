@@ -22,6 +22,9 @@ namespace WorldGen
         protected int _remainingHexes;
         protected List<Coords> _validHexes;
 
+        private static Random rnd = new Random();
+
+        public virtual bool AllowsReexpansion { get { return true; } }
 
         // ------------ Abstract methods ------------
         // These methods must be overridden to dictate the rules of expansion.
@@ -57,7 +60,7 @@ namespace WorldGen
 
         // ------------ Concrete methods ------------
 
-        public HexExpander(HexMap map)
+        protected HexExpander(HexMap map)
         {
             _map = map;
         }
@@ -77,8 +80,6 @@ namespace WorldGen
             _totalHexes = _remainingHexes = size;
             _validHexes = validHexes;
 
-            Random rnd = new Random();
-
             // list of coords to be expanded out from, but which have not been expanded from yet
             List<Coords> unexpanded = new List<Coords>();
             // list of coords to expand from again
@@ -95,20 +96,25 @@ namespace WorldGen
             {
                 int i = rnd.Next(totalValidHexes);
                 Coords seedCoords = validHexes[i];
-                placedSeed = ModHex(seedCoords);
-                if (placedSeed)
+                if (CanExpandFirst(seedCoords))
                 {
-                    _remainingHexes--;
-                    unexpanded.Add(seedCoords);
+                    placedSeed = ModHex(seedCoords);
+                    if (placedSeed)
+                    {
+                        _remainingHexes--;
+                        unexpanded.Add(seedCoords);
+                        continue;
+                    }
                 }
-                else attempts++;
+                attempts++;
             }
 
             while (_remainingHexes > 0)
             {
                 if (unexpanded.Count == 0)
                 {
-                    if (expandAgain.Count() > 0)
+                    if (AllowsReexpansion
+                        && (expandAgain.Count() > 0))
                     {
                         unexpanded = expandAgain;
                     }
@@ -171,6 +177,19 @@ namespace WorldGen
             }
 
             return rv;
+        }
+
+        /* <summary>
+         * Determines if a first modification in an expansion is valid.
+         * Similar to CanExpandTo(), except that method is for expansions after the first,
+         * and this is for the initial placement.
+         * </summary>
+         * <param name="coords">Coords to check for validity.</param>
+         * <returns>True if the coords are okay for first expansion, false otherwise.</returns>
+         */
+        protected virtual bool CanExpandFirst(Coords coords)
+        {
+            return true;
         }
 
         /* <summary>
@@ -244,7 +263,6 @@ namespace WorldGen
         protected virtual int RollModifier()
         {
             double ratio = _remainingHexes / _totalHexes;
-            Random rnd = new Random();
             int mod = 0;
 
             while ((mod < Hex.SIDES)
@@ -267,7 +285,6 @@ namespace WorldGen
          */
         protected virtual int RollBaseExpansion(int adjCount)
         {
-            Random rnd = new Random();
             return rnd.Next(adjCount);
         }
 

@@ -60,6 +60,7 @@
     <Compile Include="NameGenerator.cs" />
     <Compile Include="River.cs" />
     <Compile Include="RiverExpander.cs" />
+    <Compile Include="RiverSegment.cs" />
     <Compile Include="WorldGen.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>

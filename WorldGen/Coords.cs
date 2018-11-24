@@ -60,5 +60,9 @@ namespace WorldGen
             return !c1.Equals(c2);
         }
 
+        public override string ToString()
+        {
+            return "(" + x + ", " + y + ")";
+        }
     }
 }

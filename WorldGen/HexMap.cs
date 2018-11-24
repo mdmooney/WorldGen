@@ -57,6 +57,12 @@ namespace WorldGen
             else return GetHexAt(coords).elevation;
         }
 
+        public RiverSegment GetMainRiverSegmentAt(Coords coords)
+        {
+            if (coords.invalid) return null;
+            else return GetHexAt(coords).MainRiverSegment;
+        }
+
         public void SetTypeAt(int x, int y, Hex.HexType type)
         {
             map[x, y].type = type;
@@ -148,8 +154,14 @@ namespace WorldGen
 
         public bool IsRiverAt(Coords coords)
         {
-            // not yet implemented
-            return false;
+            if (coords.invalid) return false;
+            return (GetHexAt(coords).HasRiver());
+        }
+
+        public bool IsLandAt(Coords coords)
+        {
+            if (coords.invalid) return false;
+            return GetHexAt(coords).IsLand();
         }
 
         public void SetPlaceable(Coords coords, bool placeable)
@@ -169,6 +181,14 @@ namespace WorldGen
             return false;
         }
 
+        public bool AddMainRiverAt(Coords coords, RiverSegment riverSegment)
+        {
+            if (coords.invalid) return false;
+            Hex hex = GetHexAt(coords);
+            hex.MainRiverSegment = riverSegment;
+            return true;
+        }
+
         public Dictionary<Hex.Side, Coords> GetAllAdjacentCoords(Coords coords)
         {
             return GetAllAdjacentCoords(coords.x, coords.y);
@@ -178,7 +198,7 @@ namespace WorldGen
         {
             Dictionary<Hex.Side, Coords> coords = new Dictionary<Hex.Side, Coords>();
 
-            foreach (Hex.Side side in Enum.GetValues(typeof(Hex.Side)))
+            for (Hex.Side side = 0; side < Hex.Side.Nil; side++)
             {
                 Coords maybeCoords = GetAdjacentCoords(x, y, side);
                 if (!maybeCoords.invalid)

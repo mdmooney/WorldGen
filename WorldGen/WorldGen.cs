@@ -46,7 +46,6 @@ namespace WorldGen
                 {
                     massHexes = remainingHexes;
                 }
-                Console.WriteLine("Hexes in landmass " + i + ": " + massHexes);
 
                 remainingHexes -= massHexes;
                 landmass.totalHexes = landmass.remainingHexes = massHexes;
@@ -103,6 +102,16 @@ namespace WorldGen
 
                     range = elevatedOnThisPass.Count;
                     eleHexes = elevatedOnThisPass;
+                }
+
+                // Rivers
+                passes = rnd.Next(1, 5);
+                int totalRiverHexes = 50;
+                for (int pass = 1; pass <= passes; pass++)
+                {
+                    RiverExpander rEx = new RiverExpander(map);
+                    List<Coords> riverHexes = rEx.Expand(mass.hexes, totalRiverHexes);
+                    totalRiverHexes -= riverHexes.Count;
                 }
             }
         }

@@ -20,23 +20,25 @@ namespace WorldGen
     /// </summary>
     public partial class MainWindow : Window
     {
+        private const double DEFAULT_SCALE = 10.0;
+
         public MainWindow()
         {
             InitializeComponent();
 
             int maxX = 80;
             int maxY = 50;
-
+            
             HexMap testMap = new HexMap(maxX, maxY);
             WorldGenerator wGen = new WorldGenerator(testMap);
             wGen.Generate();
 
-            DrawHexMap(testMap, 5.0);
+            DrawHexMap(testMap);
 
             this.SizeToContent = SizeToContent.WidthAndHeight;
         }
 
-        private void DrawHexMap(HexMap map, Double scale = 10.0)
+        private void DrawHexMap(HexMap map, Double scale = DEFAULT_SCALE)
         {
             Point offset = GetHexagonOffsets(scale);
 
@@ -51,11 +53,19 @@ namespace WorldGen
                 {
                     y += (offset.Y * 2);
                     DrawHexagon(x, y, map.ElevationColorAt(i,j), scale);
+                    Coords currCoords = new Coords(i, j);
+                    if (map.IsRiverAt(currCoords))
+                    {
+                        RiverSegment seg = map.GetMainRiverSegmentAt(currCoords);
+                        Hex.Side? entry = seg.EntrySide;
+                        Hex.Side? exit = seg.ExitSide;
+                        DrawRiver(x, y, entry, exit, scale);
+                    }
                 }
             }
         }
 
-        private Point GetHexagonOffsets(Double scale = 10.0)
+        private Point GetHexagonOffsets(Double scale = DEFAULT_SCALE)
         {
             const double ANGLE = 1.0472;  // 60 degrees in radians
             double point2x = Math.Cos(ANGLE) * scale;
@@ -64,7 +74,7 @@ namespace WorldGen
             return new Point(point2x, point2y);
         }
 
-        private void DrawHexagon(Double oriX, Double oriY, Color color, Double scale = 10.0)
+        private void DrawHexagon(Double oriX, Double oriY, Color color, Double scale = DEFAULT_SCALE)
         {
             Polygon myPolygon;
             myPolygon = new Polygon()
@@ -108,6 +118,88 @@ namespace WorldGen
             myPointCollection.Add(Point6);
             myPolygon.Points = myPointCollection;
             hexGrid.Children.Add(myPolygon);
+        }
+
+        private void DrawRiver(Double oriX, Double oriY, Hex.Side? entry, Hex.Side? exit, Double scale = DEFAULT_SCALE)
+        {
+            Point offset = GetHexagonOffsets(scale);
+
+            Point center = new Point(oriX + offset.X, oriY + offset.Y);
+
+            // draw entry line
+            if (entry != null)
+            {
+                Hex.Side entrySide = (Hex.Side)entry;
+                Point entryPoint = GetCoordsOfSideMidpoint(oriX, oriY, entrySide, scale);
+                Line entryLine = new Line()
+                {
+                    Stroke = System.Windows.Media.Brushes.Blue,
+                    StrokeThickness = 1,
+                    X1 = center.X,
+                    Y1 = center.Y,
+                    X2 = entryPoint.X,
+                    Y2 = entryPoint.Y
+                };
+                hexGrid.Children.Add(entryLine);
+            }
+
+            // draw exit line, if there is one
+            if (exit != null)
+            {
+                Hex.Side exitSide = (Hex.Side)exit;
+                Point exitPoint = GetCoordsOfSideMidpoint(oriX, oriY, exitSide, scale);
+                Line exitLine  = new Line()
+                {
+                    Stroke = System.Windows.Media.Brushes.Blue,
+                    StrokeThickness = 1,
+                    X1 = center.X,
+                    Y1 = center.Y,
+                    X2 = exitPoint.X,
+                    Y2 = exitPoint.Y
+                };
+                hexGrid.Children.Add(exitLine);
+            }
+        }
+
+        // Helper method to get the coordinates of the middle of a given side from origin coords
+        // (upper-left point of the hexagon)
+        private Point GetCoordsOfSideMidpoint(Double oriX, Double oriY, Hex.Side side, Double scale = DEFAULT_SCALE)
+        {
+            Point offset = GetHexagonOffsets(scale);
+            Point rv = new Point(oriX, oriY);
+            switch (side)
+            {
+                case Hex.Side.North:
+                    rv.X += (scale / 2.0);
+                    break;
+                case Hex.Side.Northeast:
+                    rv.X += scale;
+                    rv.X += (offset.X / 2.0);
+                    rv.Y += (offset.X / 2.0);
+                    break;
+                case Hex.Side.Northwest:
+                    rv.X -= (offset.X / 2.0);
+                    rv.Y += (offset.X / 2.0);
+                    break;
+                case Hex.Side.South:
+                    rv.X += (scale / 2.0);
+                    rv.Y += (scale * 2);
+                    break;
+                case Hex.Side.Southeast:
+                    rv.X += scale;
+                    rv.X += (offset.X / 2.0);
+                    rv.Y += scale;
+                    rv.Y += (offset.X / 2.0);
+                    break;
+                case Hex.Side.Southwest:
+                    rv.X -= (offset.X / 2.0);
+                    rv.Y += scale;
+                    rv.Y += (offset.X / 2.0);
+                    break;
+                default:
+                    break;
+            }
+            return rv;
         }
     }
 }
