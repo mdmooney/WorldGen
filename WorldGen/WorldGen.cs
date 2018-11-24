@@ -14,13 +14,13 @@ namespace WorldGen
             public int totalHexes;
             public int remainingHexes;
             public List<Coords> hexes = new List<Coords>();
+            public List<Coords> shoreHexes = new List<Coords>();
         }
 
         private HexMap map;
         private List<AbstractLandmass> landmasses;
         const double WORLD_RATIO = 0.30;
         const int MAX_LANDMASSES = 10;
-
 
         public WorldGenerator(HexMap map)
         {
@@ -73,6 +73,7 @@ namespace WorldGen
                         foreach (Coords shoreCoords in shoreHexes)
                         {
                             map.SetTypeAt(shoreCoords, Hex.HexType.Shore);
+                            mass.shoreHexes.Add(shoreCoords);
                         }
                     }
                 }
@@ -110,7 +111,8 @@ namespace WorldGen
                 for (int pass = 1; pass <= passes; pass++)
                 {
                     RiverExpander rEx = new RiverExpander(map);
-                    List<Coords> riverHexes = rEx.Expand(mass.hexes, totalRiverHexes);
+                    List<Coords> landAndShore = mass.hexes.Union(mass.shoreHexes).ToList();
+                    List<Coords> riverHexes = rEx.Expand(landAndShore, totalRiverHexes);
                     totalRiverHexes -= riverHexes.Count;
                 }
             }

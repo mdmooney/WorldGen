@@ -164,6 +164,12 @@ namespace WorldGen
             return GetHexAt(coords).IsLand();
         }
 
+        public bool IsWaterAt(Coords coords)
+        {
+            if (coords.invalid) return false;
+            return GetHexAt(coords).IsWater();
+        }
+
         public void SetPlaceable(Coords coords, bool placeable)
         {
             Hex hex = GetHexAt(coords);

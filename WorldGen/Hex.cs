@@ -118,6 +118,12 @@ namespace WorldGen
                     && _type != HexType.Shore);
         }
 
+        public bool IsWater()
+        {
+            return (_type == HexType.Ocean
+                    || _type == HexType.Shore);
+        }
+
         public bool HasRiver()
         {
             return MainRiverSegment != null;

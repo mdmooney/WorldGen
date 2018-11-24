@@ -24,6 +24,8 @@ namespace WorldGen
 
         private static Random rnd = new Random();
 
+        private bool _finalizeEarly = false;
+
         public virtual bool AllowsReexpansion { get { return true; } }
 
         // ------------ Abstract methods ------------
@@ -109,7 +111,8 @@ namespace WorldGen
                 attempts++;
             }
 
-            while (_remainingHexes > 0)
+            while ((_remainingHexes > 0)
+                    && !_finalizeEarly)
             {
                 if (unexpanded.Count == 0)
                 {
@@ -286,6 +289,16 @@ namespace WorldGen
         protected virtual int RollBaseExpansion(int adjCount)
         {
             return rnd.Next(adjCount);
+        }
+
+        /* <summary>
+         * Simple switch method to end expansion early. This will enable a flag that,
+         * when set, will prevent any further iterations of expansion from happening.
+         * </summary>
+         */
+        protected void FinalizeEarly()
+        {
+            _finalizeEarly = true;
         }
 
     }
