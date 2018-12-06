@@ -45,11 +45,11 @@ namespace WorldGen
             double x = 0.0;
             double y = 0.0;
 
-            for (int i = 0; i < map.width; i++)
+            for (int i = 0; i < map.Width; i++)
             {
                 x += scale + offset.X;
                 y = (i % 2 != 0) ? offset.Y : 0.0;
-                for (int j = 0; j < map.height; j++)
+                for (int j = 0; j < map.Height; j++)
                 {
                     y += (offset.Y * 2);
                     DrawHexagon(x, y, map.ElevationColorAt(i,j), scale);

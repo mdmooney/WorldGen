@@ -7,11 +7,28 @@ using System.Windows.Media;
 
 namespace WorldGen
 {
+    /**
+     * <summary>
+     * Hex class, representing a singular hex, or tile, of the map.
+     * </summary>
+     * <remarks>
+     * This class tracks anything that is specific to a hex, and that is somewhat
+     * permanent. The intent is to keep hexes as self-contained as possible and
+     * let the HexMap class (and possibly other, similar classes) handle relationships
+     * between different Hex objects.
+     * </remarks>
+     */
     class Hex
     {
-
+        // Number of sides; tiles are hexagonal, so this should never change
         public const int SIDES = 6;
 
+        /**
+         * <summary>
+         * This enum defines the broad categories of hex, which are handled very
+         * differently by the application.
+         * </summary>
+         */
         public enum HexType
         {
             Ocean,
@@ -20,7 +37,13 @@ namespace WorldGen
             NumHexTypes
         }
 
-        public enum Elevation
+        /**
+         * <summary>
+         * This enum defines possible elevation levels for a hex in ascending order
+         * of height.
+         * </summary>
+         */
+        public enum ElevationLevel
         {
             Low,
             LowMid,
@@ -29,6 +52,13 @@ namespace WorldGen
             High
         }
 
+        /**
+         * <summary>
+         * This enum standardizes ordering nad naming for the sides of the hex.
+         * "Nil" is considered to be a side without meaning, and is used when
+         * nullable types are not appropriate.
+         * </summary>
+         */
         public enum Side
         {
             North,
@@ -40,18 +70,41 @@ namespace WorldGen
             Nil
         }
 
+        /**
+         * <summary>
+         * Static method to determine which side is adjacent to another, in
+         * counterclockwise order.
+         * </summary>
+         * <param name="side">The side to rotate.</param>
+         * <returns>The Side counterclockwise-adjacent to <paramref name="side"/>.</returns>
+         */
         public static Side RotateSideCounterclockwise(Side side)
         {
             if (side == Side.North) return Side.Northwest;
             else return side - 1;
         }
 
+        /**
+         * <summary>
+         * Static method to determine which side is adjacent to another, in
+         * clockwise order.
+         * </summary>
+         * <param name="side">The side to rotate.</param>
+         * <returns>The Side clockwise-adjacent to <paramref name="side"/>.</returns>
+         */
         public static Side RotateSideClockwise(Side side)
         {
             if (side == Side.Northwest) return Side.North;
             else return side + 1;
         }
 
+        /**
+         * <summary>
+         * Static method to get the side opposite of another.
+         * </summary>
+         * <param name="side">The side to flip.</param>
+         * <returns>The Side directly opposite <paramref name="side"/>.</returns>
+         */
         public static Side OppositeSide(Side side)
         {
             switch (side)
@@ -73,66 +126,114 @@ namespace WorldGen
             }
         }
 
-        private HexType _type;
-        public HexType type
-        {
-            get { return _type; }
-            set { _type = value; }
-        }
 
-        private Elevation _elevation = Elevation.Low;
-        public Elevation elevation
-        {
-            get { return _elevation; }
-            set { _elevation = value; }
-        }
+        /**
+         * <summary>
+         * The broad type of this hex.
+         * </summary>
+         */
+        public HexType Type { get; set; }
 
-        private bool _canPlace = true;
-        public bool CanPlace
-        {
-            get
-            {
-                return _canPlace;
-            }
-            set
-            {
-                _canPlace = value;
-            }
-        }
+        /**
+         * <summary>
+         * The elevation level of this hex. Defaults to low.
+         * </summary>
+         */
+        public ElevationLevel Elevation { get; set; } = ElevationLevel.Low;
 
+        /**
+         * <summary>
+         * Whether this hex is valid for the placement of land or not.
+         * A Hex should be considered valid for land placement if:
+         *   - It is not already HexType.Land.
+         *   - It is not adjacent to another land hex.
+         * True if land can be placed here, false otherwise.
+         * </summary>
+         */
+        public bool CanPlace { get; set; } = true;
+
+        /**
+         * <summary>
+         * The primary RiverSegment for this Hex. A Hex can only have one main
+         * RiverSegment; that is, a RiverSegment that enters the Hex and possibly
+         * leaves it as well.
+         * </summary>
+         */
         public RiverSegment MainRiverSegment { get; set; }
 
+        /**
+         * <summary>
+         * Default constructor for Hex.
+         * Simply initializes the Hex as an ocean tile.
+         * </summary>
+         */
         public Hex()
         {
-            _type = HexType.Ocean;
+            Type = HexType.Ocean;
         }
 
+        /**
+         * <summary>
+         * HexType constructor for Hex.
+         * Allows setting the broad type of Hex during instantation.
+         * </summary>
+         */
         public Hex(HexType type)
         {
-            _type = type;
+            Type = type;
         }
 
+        /**
+         * <summary>
+         * Simple predicate to determine whether the Hex is a land type
+         * Hex or not.
+         * </summary>
+         * <returns>True if the Hex is a land hex, false otherwise.</returns>
+         */
         public bool IsLand()
         {
-            return (_type != HexType.Ocean 
-                    && _type != HexType.Shore);
+            return (Type == HexType.Land);
         }
 
+        /**
+         * <summary>
+         * Predicate: is this Hex a water hex?
+         * </summary>
+         * <remarks>
+         * This considers the general type of Hex; this will return false if the
+         * Hex is a land hex that happens to contain water (like a river).
+         * </remarks>
+         * <returns>True if the Hex is a water hex, false otherwise.</returns>
+         */
         public bool IsWater()
         {
-            return (_type == HexType.Ocean
-                    || _type == HexType.Shore);
+            return (Type == HexType.Ocean
+                    || Type == HexType.Shore);
         }
 
+        /**
+         * <summary>
+         * Predicate: does this Hex contain a river?
+         * </summary>
+         * <returns>True if the Hex has a river, false otherwise.</returns>
+         */
         public bool HasRiver()
         {
             return MainRiverSegment != null;
         }
 
 
+        /**
+         * <summary>
+         * Method to display a Hex as a char, used for console display.
+         * </summary>
+         * <returns>
+         * A char representing the Hex on a console map.
+         * </returns>
+         */
         public char CharDisplay()
         {
-            switch (type)
+            switch (Type)
             {
                 case HexType.Ocean:
                     return '~';
@@ -143,9 +244,16 @@ namespace WorldGen
             }
         }
 
+        /**
+         * <summary>
+         * Method to get a hardcoded color for a Hex, by HexType.
+         * This will be replaced eventually by a config file, or similar.
+         * </summary>
+         * <returns>A color from the Colors namespace, specific to the HexType of this Hex.</returns>
+         */
         public Color GetColor()
         {
-            switch (_type)
+            switch (Type)
             {
                 case HexType.Ocean:
                     return Colors.SteelBlue;
@@ -158,21 +266,28 @@ namespace WorldGen
             }
         }
 
+        /**
+         * <summary>
+         * Method to get a hardcoded color for a Hex, by ElevationLevel.
+         * This will be replaced eventually by a config file, or similar.
+         * </summary>
+         * <returns>A color from the Colors namespace, specific to the ElevationLevel of this Hex.</returns>
+         */
         public Color GetElevationColor()
         {
-            if (_type == HexType.Ocean || _type == HexType.Shore)
+            if (Type == HexType.Ocean || Type == HexType.Shore)
                 return GetColor();
-            switch (_elevation)
+            switch (Elevation)
             {
-                case Elevation.Low:
+                case ElevationLevel.Low:
                     return Colors.SlateBlue;
-                case Elevation.LowMid:
+                case ElevationLevel.LowMid:
                     return Colors.Orchid;
-                case Elevation.Mid:
+                case ElevationLevel.Mid:
                     return Colors.Tomato;
-                case Elevation.MidHigh:
+                case ElevationLevel.MidHigh:
                     return Colors.Gold;
-                case Elevation.High:
+                case ElevationLevel.High:
                     return Colors.LawnGreen;
                 default:
                     return Colors.Magenta;

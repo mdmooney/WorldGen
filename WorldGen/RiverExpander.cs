@@ -6,20 +6,34 @@ using System.Threading.Tasks;
 
 namespace WorldGen
 {
+    /**
+     * <summary>
+     * Class to expand a river by placing it, segment by segment, over a set of hexes.
+     * </summary>
+     */
     class RiverExpander : HexExpander
     {
         private RiverSegment _lastSegment;
         private Coords _lastSegmentCoords;
         private River _currentRiver;
 
+        // No re-expansion; rivers are linear
         public override bool AllowsReexpansion { get { return false; } }
 
+        /**
+         * <summary>
+         * Sole constructor for the RiverExpander class.
+         * Initializes a new River object, which will be referred to for all
+         * segments of the new river.
+         * </summary>
+         */
         public RiverExpander(HexMap map) : base(map)
         {
             _currentRiver = new River();
         }
 
-        /* <summary>
+        /**
+         * <summary>
          * Predicates shared between first placement validity checking and expansion
          * validity checking. Checks to ensure that the river will be placed on land,
          * and that there is not already a river at the specified location.
@@ -34,6 +48,20 @@ namespace WorldGen
             return !(_map.IsRiverAt(coords));
         }
 
+        /**
+         * <summary>
+         * Expansion validity checker for river segment placement.
+         * Determines if the next segment of this river can be placed at the hex located
+         * at a set of given coords (see <see cref="HexExpander.CanExpandTo(Coords)"/>).
+         * </summary>
+         * <remarks>
+         * Checks that the river is contiguous, flows laterally or downhill (prefers downhill),
+         * and that the river is not doubling back on itself, then checks the shared conditions
+         * (see <see cref="CanPlaceRiverShared(Coords)"/>).
+         * </remarks>
+         * <param name="coords"></param>
+         * <returns></returns>
+         */
         protected override bool CanExpandTo(Coords coords)
         {
             if (_lastSegmentCoords != null)
@@ -81,6 +109,14 @@ namespace WorldGen
             return CanPlaceRiverShared(coords);
         }
 
+        /**
+         * <summary>
+         * Attempts to modify a hex by placing a river segment there.
+         * Can be a land or water hex, but if it's water hex, the river terminates.
+         * </summary>
+         * <param name="coords">Coords for the hex to be modified.</param>
+         * <returns>True if a new RiverSegment was placed in the hex at <paramref name="coords"/>, false otherwise.</returns>
+         */
         protected override bool ModHex(Coords coords)
         {
             if (_map.IsWaterAt(coords)

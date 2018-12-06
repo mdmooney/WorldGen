@@ -5,10 +5,11 @@ using System.Linq;
 namespace WorldGen
 {
 
-    /* <summary>
+    /** <summary>
      * Abstract parent class for hex expanders, i.e. classes which expand a
-     * region in a HexMap from a single Hex, possibly multiple times, according 
-     * to some set of rules.
+     * region in a HexMap starting from a single Hex, and then expanding further
+     * from modified hexes. This may happen multiple times, according to a set
+     * of rules defined by subclasses.
      * 
      * The expansion is semi-random and is intended to create an organic
      * spread.
@@ -26,48 +27,57 @@ namespace WorldGen
 
         private bool _finalizeEarly = false;
 
+        /// <summary>
+        /// Whether this HexExpander allows re-expansion from Hexes that have
+        /// already been expanded from previously.
+        /// </summary>
         public virtual bool AllowsReexpansion { get { return true; } }
 
         // ------------ Abstract methods ------------
         // These methods must be overridden to dictate the rules of expansion.
 
-        /* <summary>
+        /** <summary>
          * Determines the criteria that constitutes a valid or invalid destination
-         * for expansion.
+         * or expansion.
          * </summary>
-         * <returns>
-         * True if coords are valid to expand to, false otherwise.
-         * </returns>
+         * <param name="coords">Coords for which to check validity of expansion.</param>
+         * <returns>True if coords are valid to expand to, false otherwise.</returns>
          */
         protected abstract bool CanExpandTo(Coords coords);
 
-        /* <summary>
-         * Attempt to modify the given hex in accordance with whatever this
-         * expansion is trying to do (e.g. change the elevation).
+        /** <summary>
+         Attempt to modify the given hex in accordance with whatever this
+         expansion is trying to do (e.g. change the elevation).
          * </summary>
-         * <returns>
-         * True if the hex at coords was successfully modified, false otherwise.
-         * </returns>
+         * <param name="coords">Coords for which the corresponding hex will be possibly modified.</param>
+         * <returns>True if the hex at coords was successfully modified, false otherwise.</returns>
          */
         protected abstract bool ModHex(Coords coords);
 
-        /* <summary>
+        /** <summary>
          * Method called on all hexes adjacent to hexes that were not expanded from
          * (i.e. hexes that could have been expanded from, but we hit some end condition,
          * like reaching the total number of desired hexes, before that happened).
          * </summary>
+         * <param name="coords">Coords of a hex adjacent to some unexpanded hex.</param>
          */
         protected abstract void FinishAdjacentUnexpanded(Coords coords);
 
 
         // ------------ Concrete methods ------------
 
+        /**
+         * <summary>
+         * Sole constructor of a HexExpander just takes the HexMap which will be
+         * altered by the hex expansion.
+         * </summary>
+         */
         protected HexExpander(HexMap map)
         {
             _map = map;
         }
 
-        /* <summary>
+        /** <summary>
          * Expand the given property in the map, within a set of coords predetermined
          * to point to hexes valid for expansion.
          * </summary>
@@ -77,8 +87,8 @@ namespace WorldGen
          */
         public List<Coords> Expand(List<Coords> validHexes, int size)
         {
-            int width = _map.width;
-            int height = _map.height;
+            int width = _map.Width;
+            int height = _map.Height;
             _totalHexes = _remainingHexes = size;
             _validHexes = validHexes;
 
@@ -182,30 +192,31 @@ namespace WorldGen
             return rv;
         }
 
-        /* <summary>
+        /** <summary>
          * Determines if a first modification in an expansion is valid.
          * Similar to CanExpandTo(), except that method is for expansions after the first,
          * and this is for the initial placement.
          * </summary>
          * <param name="coords">Coords to check for validity.</param>
-         * <returns>True if the coords are okay for first expansion, false otherwise.</returns>
+         * <returns>True if <paramref name="coords"/> are okay for first expansion, false otherwise.</returns>
          */
         protected virtual bool CanExpandFirst(Coords coords)
         {
             return true;
         }
 
-        /* <summary>
+        /** <summary>
          * Given some coordinates, find all sides of the given tile such that the neighbour
          * on that side, and all subsequent neighbours in a contiguous clockwise rotation
          * for n turns, are valid for placement.
-         * 
+         * </summary>
+         * <remarks>
          * If more sides are requested than the maximum number of adjacent tiles allows
          * (6, for a hexagonal grid), the maximum number of sides will be used as a ceiling.
-         * </summary>
+         * </remarks>
          * <param name="coords">The coordinates (start point) to search from.</param>
          * <param name="n">The number of contiguous sides to find.</param>
-         * <return>A list of all sides which have n clockwise contiguous valid neighbours.</return>
+         * <return>A list of all sides which have <paramref name="n"/> clockwise contiguous valid neighbours.</return>
          */
         private List<Hex.Side> FindNContiguousValidSides(Coords coords, int n)
         {
@@ -234,11 +245,14 @@ namespace WorldGen
             return goodSides;
         }
 
-        /* <summary>
+        /** <summary>
          * Get a list of all coords adjacent to the given coords, filtered such that:
          *  - All returned coords are contained in the valid hex list
          *  - All returned coords can be expanded to, per implementation of CanExpandTo()
          * </summary>
+         * <param name="coords">Coords for which to find valid adjacent hexes.</param>
+         * <returns>A dictionary of valid coordinates adjacent to <paramref name="coords"/>, keyed by which
+         * side of the hex at the given coords they are adjacent to.</returns>
          */
         private Dictionary<Hex.Side, Coords> GetFilteredAdjacency(Coords coords)
         {
@@ -252,16 +266,17 @@ namespace WorldGen
             return rv;
         }
 
-        /* <summary>
+        /** <summary>
          * Generates a modifier to add onto the base roll, used to determine the number of sides
          * to expand out to from a starting hex.
-         * 
+         * </summary>
+         * <remarks>
          * This modifier is random, but will likely be higher when there are more hexes that
          * have not yet been expanded to. This is done to favour a more blob-shaped core with
          * branches/peninsulae as generation goes on.
-         * </summary>
-         * <return>A modifier not exceeding Hex.SIDES, likely higher when there are more hexes
-         * that have not yet been placed.</return>
+         * </remarks>
+         * <returns>A modifier not exceeding Hex.SIDES, likely higher when there are more hexes
+         * that have not yet been placed.</returns>
          */
         protected virtual int RollModifier()
         {
@@ -282,19 +297,25 @@ namespace WorldGen
             return mod;
         }
 
-        /* <summary>
+        /** <summary>
          * Randomly determine how many sides to expand out into from a starting hex.
          * </summary>
+         * <param name="adjCount">The maximum number of sides to expand into.</param>
+         * <returns>A random integer in range [0, adjCount].</returns>
          */
         protected virtual int RollBaseExpansion(int adjCount)
         {
             return rnd.Next(adjCount);
         }
 
-        /* <summary>
+        /** <summary>
          * Simple switch method to end expansion early. This will enable a flag that,
          * when set, will prevent any further iterations of expansion from happening.
          * </summary>
+         * <remarks>
+         * Use of FinalizeEarly may be desirable when a subclass of this class has a
+         * specific end condition that would otherwise be ignored by expansion.
+         * </remarks>
          */
         protected void FinalizeEarly()
         {

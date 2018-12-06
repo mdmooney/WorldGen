@@ -3,12 +3,14 @@ using System.Text;
 
 namespace WorldGen
 {
-    /* <summary>
+    /** <summary>
      * A simple generator for in-world names.
+     * </summary>
+     * <remarks>
      * Can currently only generate nonsense names, that favourite staple of the fantasy genre.
      * Will eventually be expanded to allow more robust place names, like "Mount Foo".
-     * </summary>
-     */ 
+     * </remarks>
+     */
     class NameGenerator
     {
         // These define the vowels and consonants that may be found in any syllable of a nonsense
@@ -50,17 +52,24 @@ namespace WorldGen
 
         private Random rand;
 
+        /**
+         * <summary>
+         * Sole constructor for NameGenerator().
+         * </summary>
+         */
         public NameGenerator()
         {
             rand = new Random();
         }
 
-        /* <summary>
-         * Generates a nonsensical name by choosing a number of syllables (currently hardcoded
-         * in the range of 1-3, but subject to change) and generating them. Each syllable has
-         * at least a vowel, and may have a start or end consonant, depending on the probabilities
-         * set in this instance.
+        /** <summary>
+         * Generates a (probably) nonsensical fantasy name. 
          * </summary>
+         * <remarks>
+         * This method works by choosing a number of syllables (currently hardcoded in the range
+         * of 1-3, but subject to change) and generating them. Each syllable has at least a vowel,
+         * and may have a start or end consonant, depending on the probabilities set in this instance.
+         * </remarks>
          * <returns>A nonsense name.</returns>
          */
         public string GenerateNonsenseName()
@@ -71,7 +80,7 @@ namespace WorldGen
                 return "foo";
             }
 
-            // arbitrary capacity, long enough for a 6-syllable string with 6 chars each
+            // capacity long enough for a 6-syllable string with 6 chars each
             StringBuilder builder = new StringBuilder(36);
 
             // decide how many syllables to generate
@@ -113,7 +122,7 @@ namespace WorldGen
             return builder.ToString();
         }
 
-        /* <summary>
+        /** <summary>
          * Pick a consonant string at random from either the general pool of consonants, or,
          * optionally, a supplemental pool of consonants (intended for starting or ending
          * consonant lists).
