@@ -34,8 +34,6 @@ namespace WorldGen
             wGen.Generate();
 
             DrawHexMap(testMap);
-
-            this.SizeToContent = SizeToContent.WidthAndHeight;
         }
 
         private void DrawHexMap(HexMap map, Double scale = DEFAULT_SCALE)
@@ -109,15 +107,17 @@ namespace WorldGen
             y -= point2y;
             System.Windows.Point Point6 = new System.Windows.Point(x, y);
 
-            PointCollection myPointCollection = new PointCollection();
-            myPointCollection.Add(Point1);
-            myPointCollection.Add(Point2);
-            myPointCollection.Add(Point3);
-            myPointCollection.Add(Point4);
-            myPointCollection.Add(Point5);
-            myPointCollection.Add(Point6);
+            PointCollection myPointCollection = new PointCollection
+            {
+                Point1,
+                Point2,
+                Point3,
+                Point4,
+                Point5,
+                Point6
+            };
             myPolygon.Points = myPointCollection;
-            hexGrid.Children.Add(myPolygon);
+            HexMapGrid.Children.Add(myPolygon);
         }
 
         private void DrawRiver(Double oriX, Double oriY, Hex.Side? entry, Hex.Side? exit, Double scale = DEFAULT_SCALE)
@@ -140,7 +140,7 @@ namespace WorldGen
                     X2 = entryPoint.X,
                     Y2 = entryPoint.Y
                 };
-                hexGrid.Children.Add(entryLine);
+                HexMapGrid.Children.Add(entryLine);
             }
 
             // draw exit line, if there is one
@@ -157,7 +157,7 @@ namespace WorldGen
                     X2 = exitPoint.X,
                     Y2 = exitPoint.Y
                 };
-                hexGrid.Children.Add(exitLine);
+                HexMapGrid.Children.Add(exitLine);
             }
         }
 
