@@ -251,7 +251,7 @@ namespace WorldGen
          * </summary>
          * <returns>A color from the Colors namespace, specific to the HexType of this Hex.</returns>
          */
-        public Color GetColor()
+        public Color GetBaseColor()
         {
             switch (Type)
             {
@@ -276,7 +276,7 @@ namespace WorldGen
         public Color GetElevationColor()
         {
             if (Type == HexType.Ocean || Type == HexType.Shore)
-                return GetColor();
+                return GetBaseColor();
             switch (Elevation)
             {
                 case ElevationLevel.Low:

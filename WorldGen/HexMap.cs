@@ -158,27 +158,15 @@ namespace WorldGen
 
         /**
          * <summary>
-         * Returns the Color of the Hex at the specified Coords.
+         * Returns the base Color of the Hex at the specified Coords.
+         * Color is Specific to the broad type of hex (e.g. land, ocean).
          * </summary>
          * <param name="coords">The Coords for the Hex to be queried.</param>
          * <returns>The Color of the Hex at the specified Coords.</returns>
          */
-        public Color ColorAt(Coords coords)
+        public Color BaseColorAt(Coords coords)
         {
-            return ColorAt(coords.x, coords.y);
-        }
-
-        /**
-         * <summary>
-         * Returns the Color of the Hex at the specified x and y values.
-         * </summary>
-         * <param name="x">The x value of the Hex to be queried.</param>
-         * <param name="y">The y value of the Hex to be queried.</param>
-         * <returns>The Color of the Hex at the specified x and y.</returns>
-         */
-        public Color ColorAt(int x, int y)
-        {
-            return _map[x, y].GetColor();
+            return _map[coords.x, coords.y].GetBaseColor();
         }
 
         /**
@@ -186,13 +174,12 @@ namespace WorldGen
          * Returns the Color of the Hex at the specified x and y values.
          * This Color should be based on the ElevationLevel of that Hex.
          * </summary>
-         * <param name="x">The x value of the Hex to be queried.</param>
-         * <param name="y">The y value of the Hex to be queried.</param>
-         * <returns>The elevation-based Color of the Hex at the specified x and y.</returns>
+         * <param name="coords">The Coords of the Hex to be queried.</param>
+         * <returns>The elevation-based Color of the Hex at the specified coordinates.</returns>
          */
-        public Color ElevationColorAt(int x, int y)
+        public Color ElevationColorAt(Coords coords)
         {
-            return _map[x, y].GetElevationColor();
+            return _map[coords.x, coords.y].GetElevationColor();
         }
 
         /**

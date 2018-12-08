@@ -22,21 +22,31 @@ namespace WorldGen
     {
         private const double DEFAULT_SCALE = 10.0;
 
+        // Dimensions of the map are fixed to 80 columns and 50 rows, for now
+        private static readonly int MaxX = 80;
+        private static readonly int MaxY = 50;
+
+        private HexMap hexMap;
+
         public MainWindow()
         {
             InitializeComponent();
 
-            int maxX = 80;
-            int maxY = 50;
-            
-            HexMap testMap = new HexMap(maxX, maxY);
-            WorldGenerator wGen = new WorldGenerator(testMap);
-            wGen.Generate();
+            // Dimensions of the map are fixed to 80 columns and 50 rows, for now
 
-            DrawHexMap(testMap);
+            GenerateNewWorld(MaxX, MaxY);
+
+            DrawHexMap(hexMap, hexMap.BaseColorAt);
         }
 
-        private void DrawHexMap(HexMap map, Double scale = DEFAULT_SCALE)
+        private void GenerateNewWorld(int width, int height)
+        {
+            hexMap = new HexMap(width, height);
+            WorldGenerator wGen = new WorldGenerator(hexMap);
+            wGen.Generate();
+        }
+
+        private void DrawHexMap(HexMap map, Func<Coords, Color> colorMethod, Double scale = DEFAULT_SCALE)
         {
             Point offset = GetHexagonOffsets(scale);
 
@@ -50,7 +60,7 @@ namespace WorldGen
                 for (int j = 0; j < map.Height; j++)
                 {
                     y += (offset.Y * 2);
-                    DrawHexagon(x, y, map.ElevationColorAt(i,j), scale);
+                    DrawHexagon(x, y, colorMethod(new Coords(i, j)), scale);
                     Coords currCoords = new Coords(i, j);
                     if (map.IsRiverAt(currCoords))
                     {
@@ -200,6 +210,25 @@ namespace WorldGen
                     break;
             }
             return rv;
+        }
+
+        private void LandmassViewClick(object sender, RoutedEventArgs e)
+        {
+            HexMapGrid.Children.Clear();
+            DrawHexMap(hexMap, hexMap.BaseColorAt);
+        }
+
+        private void HeightViewClick(object sender, RoutedEventArgs e)
+        {
+            HexMapGrid.Children.Clear();
+            DrawHexMap(hexMap, hexMap.ElevationColorAt);
+        }
+
+        private void NewWorldClick(object sender, RoutedEventArgs e)
+        {
+            HexMapGrid.Children.Clear();
+            GenerateNewWorld(MaxX, MaxY);
+            DrawHexMap(hexMap, hexMap.BaseColorAt);
         }
     }
 }
