@@ -133,5 +133,13 @@ namespace WorldGen
         {
             return "(" + x + ", " + y + ")";
         }
+
+        public override int GetHashCode()
+        {
+            int hash = 17;
+            hash = hash * 31 + x;
+            hash = hash * 31 + y;
+            return hash;
+        }
     }
 }
