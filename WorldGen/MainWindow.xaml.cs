@@ -1,16 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 namespace WorldGen
@@ -20,6 +11,11 @@ namespace WorldGen
     /// </summary>
     public partial class MainWindow : Window
     {
+        // List of all hexagons drawn on the map
+        // Some small memory overhead for this, but it allows certain
+        // operations like recoloring to be much more efficient
+        private List<MapHexagon> _mapHexagons;
+
         private const double DEFAULT_SCALE = 10.0;
 
         // Dimensions of the map are fixed to 80 columns and 50 rows, for now
@@ -32,7 +28,7 @@ namespace WorldGen
         {
             InitializeComponent();
 
-            // Dimensions of the map are fixed to 80 columns and 50 rows, for now
+            _mapHexagons = new List<MapHexagon>();
 
             GenerateNewWorld(MaxX, MaxY);
 
@@ -60,8 +56,10 @@ namespace WorldGen
                 for (int j = 0; j < map.Height; j++)
                 {
                     y += (offset.Y * 2);
-                    DrawHexagon(x, y, colorMethod(new Coords(i, j)), scale);
                     Coords currCoords = new Coords(i, j);
+                    Polygon newHex = CreateHexagon(x, y, colorMethod(currCoords), scale);
+                    HexMapGrid.Children.Add(newHex);
+                    _mapHexagons.Add(new MapHexagon(currCoords, newHex));
                     if (map.IsRiverAt(currCoords))
                     {
                         RiverSegment seg = map.GetMainRiverSegmentAt(currCoords);
@@ -82,7 +80,7 @@ namespace WorldGen
             return new Point(point2x, point2y);
         }
 
-        private void DrawHexagon(Double oriX, Double oriY, Color color, Double scale = DEFAULT_SCALE)
+        private Polygon CreateHexagon(Double oriX, Double oriY, Color color, Double scale = DEFAULT_SCALE)
         {
             Polygon myPolygon;
             myPolygon = new Polygon()
@@ -127,7 +125,7 @@ namespace WorldGen
                 Point6
             };
             myPolygon.Points = myPointCollection;
-            HexMapGrid.Children.Add(myPolygon);
+            return myPolygon;
         }
 
         private void DrawRiver(Double oriX, Double oriY, Hex.Side? entry, Hex.Side? exit, Double scale = DEFAULT_SCALE)
@@ -214,21 +212,28 @@ namespace WorldGen
 
         private void LandmassViewClick(object sender, RoutedEventArgs e)
         {
-            HexMapGrid.Children.Clear();
-            DrawHexMap(hexMap, hexMap.BaseColorAt);
+            RecolorHexMap(hexMap.BaseColorAt);
         }
 
         private void HeightViewClick(object sender, RoutedEventArgs e)
         {
-            HexMapGrid.Children.Clear();
-            DrawHexMap(hexMap, hexMap.ElevationColorAt);
+            RecolorHexMap(hexMap.ElevationColorAt);
         }
 
         private void NewWorldClick(object sender, RoutedEventArgs e)
         {
             HexMapGrid.Children.Clear();
+            _mapHexagons.Clear();
             GenerateNewWorld(MaxX, MaxY);
             DrawHexMap(hexMap, hexMap.BaseColorAt);
+        }
+
+        private void RecolorHexMap(Func<Coords, Color> colorMethod)
+        {
+            foreach (MapHexagon mapHex in _mapHexagons)
+            {
+                mapHex.Hexagon.Fill = new SolidColorBrush(colorMethod(mapHex.Loc));
+            }
         }
     }
 }
