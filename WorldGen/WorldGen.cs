@@ -38,13 +38,19 @@ namespace WorldGen
         // Maximum number of landmasses permitted in this world.
         const int MAX_LANDMASSES = 10;
 
-        // Default temperature band constants, representing the fraction of
-        // the world that should be a given temperature.
-        private static readonly double TempRatioHot = 0.10;
-        private static readonly double TempRatioWarm = 0.22;
-        private static readonly double TempRatioTemperate = 0.36;
-        private static readonly double TempRatioCool = 0.22;
-        private static readonly double TempRatioCold = 0.10;
+        // Temperature thresholds, in arbitrary units. These define the
+        // ranges for hex temperature determination; see SetTemperatures().
+        private static readonly int TempThreshHot = 80;
+        private static readonly int TempThreshWarm = 37;
+        private static readonly int TempThreshCool = -37;
+        private static readonly int TempThreshCold = -80;
+
+        // Default arbitrary temperature units for the poles and equator.
+        private static readonly int DefaultPoleTemp = -100;
+        private static readonly int DefaultEquatorTemp = 100;
+
+        // Arbitrary temperature unit adjustment per additional level of elevation.
+        private static readonly int TempHeightAdjust = -5;
 
         /**
          * <summary>
@@ -160,95 +166,72 @@ namespace WorldGen
                 }
 
                 // Temperature
-                SetTemperatures(2.0);
+                SetTemperatures();
             }
         }
 
         /**
          * <summary>
          * Sets temperatures for hexes in the nascent world.
-         * Currenlty, temperature is based solely on latitude, with hexes closer
-         * to the equator (center of the map) being warmer, and hexes closer to
-         * the poles (top and bottom of the map) being cooler.
-         * This can be scaled for warmer or cooler worlds.
+         * Temperature is based on three things:
+         *  - Latitude of the hex, with hexes closer to the equator (map
+         *      center) being warmer, and hexes closer to the poles (top and
+         *      bottom of the map) being cooler.
+         *  - Adjustment value. Positive values will increase the overall
+         *      temperature of the world, and negative values will decrease the
+         *      overall temperature.
+         *  - Altitude (ElevationLevel) of the hex, with higher elevations
+         *      lowering the temperature of that hex.
          * </summary>
-         * <param name="scale">Scaling factor. At values greater than 1.0 the
-         * world will be cooler overall, and at values less than 1.0 it will
-         * be warmer. At extreme values (approaching 0.0 or 2.0), temperature
-         * levels on the opposite extreme will not exist in the world.</param>
+         * <param name="adjust">
+         * Adjustment value, added to the arbitrary
+         * temperature of the hex before it is fit into one of the temperature
+         * level thresholds. Positive values will increase the temperature, and
+         * negative values will lower it. At extremes (20 and above, or -20 and
+         * below) some temperature levels will not exist in the world at all.
+         * </param>
          */
-        public void SetTemperatures(double scale = 1.0)
+        public void SetTemperatures(int adjust = 0)
         {
             // first locate the equator
             int equatorRow = map.Height / 2;
-            int currBand, coldBand;
-            currBand = coldBand = (int)(equatorRow * TempRatioCold);
-            int coolBand = (currBand += (int)(equatorRow * TempRatioCool));
-            int temperateBand = (currBand += (int)(equatorRow * TempRatioTemperate));
-            int warmBand = (currBand += (int)(equatorRow * TempRatioWarm));
-            int hotBand = (currBand += (int)(equatorRow * TempRatioHot));
 
+            // get gradient step
+            int gradStep = (DefaultEquatorTemp - DefaultPoleTemp) / (equatorRow);
+            bool stepFlipped = false;
 
-            bool flip = false;
-            if (scale < 1.0)
+            //
+            for (int y = 0, currTemp = DefaultPoleTemp; y < map.Height; y++)
             {
-                flip = true;
-                scale = 2.0 - scale;
+                // flip the temperature gradient after we hit the equator
+                if (!stepFlipped
+                    && (y >= equatorRow))
+                {
+                    gradStep *= -1;
+                    stepFlipped = true;
+                }
 
-                // take abs(band row - equatorRow) of each band
-                coldBand = Math.Abs(coldBand - equatorRow);
-                coolBand = Math.Abs(coolBand - equatorRow);
-                temperateBand = Math.Abs(temperateBand - equatorRow);
-                warmBand = Math.Abs(warmBand - equatorRow);
-                hotBand = Math.Abs(hotBand - equatorRow);
-            }
-            coldBand = (int)(coldBand * scale);
-            coolBand = (int)(coolBand * scale);
-            temperateBand = (int)(temperateBand * scale);
-            warmBand = (int)(warmBand * scale);
-            hotBand = (int)(hotBand * scale);
-
-            if (flip)
-            {
-                // take abs(band row - equatorRow) of each band
-                coldBand = equatorRow - coldBand;
-                coolBand = equatorRow - coolBand;
-                temperateBand = equatorRow - temperateBand;
-                warmBand = equatorRow - warmBand;
-                hotBand =  equatorRow - hotBand;
-            }
-
-
-            for (int y = 0; y < equatorRow; y++)
-            {
+                // set temperature of all hexes according to thresholds
                 for (int x = 0; x < map.Width; x++)
                 {
-                    if (y < coldBand)
-                    {
-                        map.SetTemperatureAt(new Coords(x, y), Hex.TemperatureLevel.Cold);
-                        map.SetTemperatureAt(new Coords(x, map.Height - 1 - y), Hex.TemperatureLevel.Cold);
-                    }
-                    else if (y < coolBand)
-                    {
-                        map.SetTemperatureAt(new Coords(x, y), Hex.TemperatureLevel.Cool);
-                        map.SetTemperatureAt(new Coords(x, map.Height - 1 - y), Hex.TemperatureLevel.Cool);
-                    }
-                    else if (y < temperateBand)
-                    {
-                        map.SetTemperatureAt(new Coords(x, y), Hex.TemperatureLevel.Temperate);
-                        map.SetTemperatureAt(new Coords(x, map.Height - 1 - y), Hex.TemperatureLevel.Temperate);
-                    }
-                    else if (y < warmBand)
-                    {
-                        map.SetTemperatureAt(new Coords(x, y), Hex.TemperatureLevel.Warm);
-                        map.SetTemperatureAt(new Coords(x, map.Height - 1 - y), Hex.TemperatureLevel.Warm);
-                    }
-                    else
-                    {
+                    Coords here = new Coords(x, y);
+                    Hex.ElevationLevel el = map.GetElevationAt(here);
+                    int heightAdjust = (int)el * TempHeightAdjust;
+                    int hexTemp = currTemp + adjust + heightAdjust;
+
+                    if (hexTemp > TempThreshHot)
                         map.SetTemperatureAt(new Coords(x, y), Hex.TemperatureLevel.Hot);
-                        map.SetTemperatureAt(new Coords(x, map.Height - 1 - y), Hex.TemperatureLevel.Hot);
-                    }
+                    else if (hexTemp > TempThreshWarm)
+                        map.SetTemperatureAt(new Coords(x, y), Hex.TemperatureLevel.Warm);
+                    else if (hexTemp < TempThreshCold)
+                        map.SetTemperatureAt(new Coords(x, y), Hex.TemperatureLevel.Cold);
+                    else if (hexTemp < TempThreshCool)
+                        map.SetTemperatureAt(new Coords(x, y), Hex.TemperatureLevel.Cool);
+                    else
+                        map.SetTemperatureAt(new Coords(x, y), Hex.TemperatureLevel.Temperate);
                 }
+
+                currTemp += gradStep;
             }
         }
     }
