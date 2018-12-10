@@ -240,5 +240,10 @@ namespace WorldGen
         {
             RecolorHexMap(hexMap.TemperatureColorAt);
         }
+
+        private void HumidityViewClick(object sender, RoutedEventArgs e)
+        {
+            RecolorHexMap(hexMap.HumidityColorAt);
+        }
     }
 }

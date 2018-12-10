@@ -56,6 +56,7 @@
     </ApplicationDefinition>
     <Compile Include="HeightExpander.cs" />
     <Compile Include="HexExpander.cs" />
+    <Compile Include="HumidityExpander.cs" />
     <Compile Include="LandmassExpander.cs" />
     <Compile Include="LayeredExpansion.cs" />
     <Compile Include="MapHexagon.cs" />

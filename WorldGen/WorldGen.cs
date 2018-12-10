@@ -149,6 +149,13 @@ namespace WorldGen
 
                 // Temperature
                 SetTemperatures();
+
+                // Humidity
+                passes = rnd.Next(1, 5);
+                List<Coords> humiHexes = new List<Coords>(mass.hexes);
+                HumidityExpander humEx = new HumidityExpander(map);
+                layered = new LayeredExpansion(humEx, humiHexes, 0.6, 0.8);
+                layered.Expand(passes);
             }
         }
 

@@ -190,9 +190,22 @@ namespace WorldGen
          * <param name="coords">Coords of the Hex to be queried.</param>
          * <returns>The temperature-based Color of the Hex at <paramref name="coords"/>.</returns>
          */
-         public Color TemperatureColorAt(Coords coords)
+        public Color TemperatureColorAt(Coords coords)
         {
             return _map[coords.x, coords.y].GetTemperatureColor();
+        }
+
+        /**
+         * <summary>
+         * Returns the Color of the Hex at the specified Coords.
+         * Color here is based on the HumidityLevel of that Hex.
+         * </summary>
+         * <param name="coords">Coords of the Hex to be queried.</param>
+         * <returns>The humidity-based Color of the Hex at <paramref name="coords"/>.</returns>
+         */
+        public Color HumidityColorAt(Coords coords)
+        {
+            return _map[coords.x, coords.y].GetHumidityColor();
         }
 
         /**
@@ -353,6 +366,17 @@ namespace WorldGen
             if (hex.Elevation < Hex.ElevationLevel.High)
             {
                 hex.Elevation++;
+                return true;
+            }
+            return false;
+        }
+
+        public bool Aridify(Coords coords)
+        {
+            Hex hex = GetHexAt(coords);
+            if (hex.Humidity > Hex.HumidityLevel.Arid)
+            {
+                hex.Humidity--;
                 return true;
             }
             return false;

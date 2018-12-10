@@ -67,6 +67,20 @@ namespace WorldGen
         }
 
         /**
+        * <summary>
+        * This enum defines possible humidity levels for a hex.
+        * </summary>
+        */
+        public enum HumidityLevel
+        {
+            Arid,
+            SemiArid,
+            Average,
+            SemiHumid,
+            Humid
+        }
+
+        /**
          * <summary>
          * This enum standardizes ordering nad naming for the sides of the hex.
          * "Nil" is considered to be a side without meaning, and is used when
@@ -155,7 +169,19 @@ namespace WorldGen
          */
         public ElevationLevel Elevation { get; set; } = ElevationLevel.Low;
 
+        /**
+         * <summary>
+         * The temperature level of this hex. Defaults to temperate.
+         * </summary>
+         */
         public TemperatureLevel Temperature { get; set; } = TemperatureLevel.Temperate;
+
+        /**
+         * <summary>
+         * The humidity level of this hex. Defaults to humid.
+         * </summary>
+         */
+        public HumidityLevel Humidity { get; set; } = HumidityLevel.Humid;
 
         /**
          * <summary>
@@ -309,6 +335,13 @@ namespace WorldGen
             }
         }
 
+        /**
+         * <summary>
+         * Method to get a hardcoded color for a Hex, by TemperatureLevel.
+         * This will be replaced eventually by a config file, or similar.
+         * </summary>
+         * <returns>A color from the Colors namespace, specific to the TemperatureLevel of this Hex.</returns>
+         */
         public Color GetTemperatureColor()
         {
             if (Type == HexType.Ocean || Type == HexType.Shore)
@@ -329,5 +362,34 @@ namespace WorldGen
                     return Colors.Magenta;
             }
         }
+
+        /**
+         * <summary>
+         * Method to get a hardcoded color for a Hex, by HumidityLevel.
+         * This will be replaced eventually by a config file, or similar.
+         * </summary>
+         * <returns>A color from the Colors namespace, specific to the HumidityLevel of this Hex.</returns>
+         */
+        public Color GetHumidityColor()
+        {
+            if (Type == HexType.Ocean || Type == HexType.Shore)
+                return GetBaseColor();
+            switch (Humidity)
+            {
+                case HumidityLevel.Humid:
+                    return Colors.DeepSkyBlue;
+                case HumidityLevel.SemiHumid:
+                    return Colors.Turquoise;
+                case HumidityLevel.Average:
+                    return Colors.GreenYellow;
+                case HumidityLevel.SemiArid:
+                    return Colors.LightSalmon;
+                case HumidityLevel.Arid:
+                    return Colors.OrangeRed;
+                default:
+                    return Colors.Magenta;
+            }
+        }
+
     }
 }

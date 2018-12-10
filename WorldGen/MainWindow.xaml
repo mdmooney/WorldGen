@@ -27,7 +27,7 @@
             <Button Grid.Row="2" Margin="5" Click="LandmassViewClick">Landmasses</Button>
             <Button Grid.Row="3" Margin="5" Click="HeightViewClick">Height Levels</Button>
             <Button Grid.Row="4" Margin="5" Click="TemperatureViewClick">Temperature</Button>
-            <Button Grid.Row="5" Margin="5">Humidity</Button>
+            <Button Grid.Row="5" Margin="5" Click="HumidityViewClick">Humidity</Button>
         </UniformGrid>
     </Grid>
 </Window>
