@@ -19,11 +19,9 @@ namespace WorldGen
         /**
          * <summary>
          * Constructor for HeightExpander takes the map on which to alter
-         * ElevationLevels, as well as a "pass" value, which indicates the
-         * highest level the HeightExpander will raise a given Hex to.
+         * ElevationLevels.
          * </summary>
          * <param name="map">The HexMap to update.</param>
-         * <param name="pass">The maximum height value for this round of expansion.</param>
          */
         public HeightExpander(HexMap map) : base(map)
         {
@@ -34,13 +32,12 @@ namespace WorldGen
         /**
          * <summary>
          * Expansion validity check. Simply checks to ensure that the Hex at
-         * the given Coords is below the max height level (and is thus eligible
-         * for further elevation).
+         * the given Coords has not already been raised in this pass.
          * </summary>
          * <param name="coords">The Coords to query.</param>
          * <returns>
-         * True if the elevation of the Hex at <paramref name="coords"/> is
-         * below the maximum value for this HeightExpander, false otherwise.
+         * True if the elevation of the Hex at <paramref name="coords"/> has
+         * not yet been raised in this pass, false otherwise.
          * </returns>
          */
         protected override bool CanExpandTo(Coords coords)
@@ -52,13 +49,16 @@ namespace WorldGen
          * <summary>
          * Update method for Hexes adjacent to Coords that were altered in
          * this round of expansion, but not expanded from themselves.
-         * Does not do anything for this class at present.
          * </summary>
+         * <remarks>
+         * For this class, we just clear the already-raised hex tracking
+         * for the next round of expansion.
+         * </remarks>
          */
         protected override void FinishAdjacentUnexpanded(Coords coords)
         {
-            // no implementation at this point
-            // may add smoothing operation here of some kind
+            // Just clear out already raised hexes for the next round
+            // of expansion
             _alreadyRaised.Clear();
         }
 
