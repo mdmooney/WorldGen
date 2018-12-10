@@ -1,4 +1,6 @@
-﻿namespace WorldGen
+﻿using System.Collections.Generic;
+
+namespace WorldGen
 {
     /**
      * <summary>
@@ -12,7 +14,7 @@
      */
     class HeightExpander : HexExpander
     {
-        private Hex.ElevationLevel _elevation;
+        private List<Coords> _alreadyRaised;
 
         /**
          * <summary>
@@ -23,9 +25,9 @@
          * <param name="map">The HexMap to update.</param>
          * <param name="pass">The maximum height value for this round of expansion.</param>
          */
-        public HeightExpander(HexMap map, int pass) : base(map)
+        public HeightExpander(HexMap map) : base(map)
         {
-            _elevation = (Hex.ElevationLevel)pass;
+            _alreadyRaised = new List<Coords>();
         }
 
 
@@ -43,7 +45,7 @@
          */
         protected override bool CanExpandTo(Coords coords)
         {
-            return _map.GetElevationAt(coords) < _elevation;
+            return !(_alreadyRaised.Contains(coords));
         }
 
         /**
@@ -57,6 +59,7 @@
         {
             // no implementation at this point
             // may add smoothing operation here of some kind
+            _alreadyRaised.Clear();
         }
 
         /**
@@ -68,7 +71,12 @@
          */
         protected override bool ModHex(Coords coords)
         {
-            return (_map.Raise(coords));
+            if (_map.Raise(coords))
+            {
+                _alreadyRaised.Add(coords);
+                return true;
+            }
+            return false;
         }
     }
 }

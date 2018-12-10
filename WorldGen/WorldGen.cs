@@ -128,31 +128,13 @@ namespace WorldGen
                 }
 
                 // Elevation
+                // Pick a number of passes; a range of the total number of
+                // elements in the enum works best
                 int passes = rnd.Next(1, 5);
                 List<Coords> eleHexes = new List<Coords>(mass.hexes);
-                int range = eleHexes.Count;
-                
-                for (int pass = 1; pass <= passes; pass++)
-                {
-                    int toElevate = rnd.Next(range / 5, (int)(range * 0.75));
-                    if (toElevate == 0) break;
-
-                    List<Coords> elevatedOnThisPass = new List<Coords>(eleHexes);
-
-                    int seedPoints = rnd.Next(1, 5);
-                    for (int seedPoint = 0; seedPoint < seedPoints; seedPoint++)
-                    {
-                        if (toElevate <= 0) break;
-                        int elevating = rnd.Next(1, toElevate);
-                        HeightExpander hEx = new HeightExpander(map, pass);
-                        List<Coords> tempHexes = hEx.Expand(eleHexes, elevating);
-                        toElevate -= tempHexes.Count;
-                        elevatedOnThisPass.AddRange(tempHexes);
-                    }
-
-                    range = elevatedOnThisPass.Count;
-                    eleHexes = elevatedOnThisPass;
-                }
+                HeightExpander hEx = new HeightExpander(map);
+                LayeredExpansion layered = new LayeredExpansion(hEx, eleHexes, 0.6, 0.8);
+                layered.Expand(passes);
 
                 // Rivers
                 passes = rnd.Next(1, 5);
@@ -173,6 +155,8 @@ namespace WorldGen
         /**
          * <summary>
          * Sets temperatures for hexes in the nascent world.
+         * </summary>
+         * <remarks>
          * Temperature is based on three things:
          *  - Latitude of the hex, with hexes closer to the equator (map
          *      center) being warmer, and hexes closer to the poles (top and
@@ -182,7 +166,7 @@ namespace WorldGen
          *      overall temperature.
          *  - Altitude (ElevationLevel) of the hex, with higher elevations
          *      lowering the temperature of that hex.
-         * </summary>
+         * </remarks>
          * <param name="adjust">
          * Adjustment value, added to the arbitrary
          * temperature of the hex before it is fit into one of the temperature
