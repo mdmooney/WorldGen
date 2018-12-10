@@ -171,7 +171,7 @@ namespace WorldGen
 
         /**
          * <summary>
-         * Returns the Color of the Hex at the specified x and y values.
+         * Returns the Color of the Hex at the specified Coords.
          * This Color should be based on the ElevationLevel of that Hex.
          * </summary>
          * <param name="coords">The Coords of the Hex to be queried.</param>
@@ -180,6 +180,19 @@ namespace WorldGen
         public Color ElevationColorAt(Coords coords)
         {
             return _map[coords.x, coords.y].GetElevationColor();
+        }
+
+        /**
+         * <summary>
+         * Returns the Color of the Hex at the specified Coords.
+         * Color here is based on the TemperatureLevel of that Hex.
+         * </summary>
+         * <param name="coords">Coords of the Hex to be queried.</param>
+         * <returns>The temperature-based Color of the Hex at <paramref name="coords"/>.</returns>
+         */
+         public Color TemperatureColorAt(Coords coords)
+        {
+            return _map[coords.x, coords.y].GetTemperatureColor();
         }
 
         /**
@@ -343,6 +356,19 @@ namespace WorldGen
                 return true;
             }
             return false;
+        }
+
+        /**
+         * <summary>
+         * Sets the TemperatureLevel of the Hex at the given Coords to the specified level.
+         * </summary>
+         * <param name="coords">Coords of the Hex to update.</param>
+         * <param name="temperature">New temperature for the Hex at <paramref name="coords"/>.</param>
+         */
+        public void SetTemperatureAt(Coords coords, Hex.TemperatureLevel temperature)
+        {
+            Hex hex = GetHexAt(coords);
+            hex.Temperature = temperature;
         }
 
         /**

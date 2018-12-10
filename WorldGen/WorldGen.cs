@@ -38,6 +38,14 @@ namespace WorldGen
         // Maximum number of landmasses permitted in this world.
         const int MAX_LANDMASSES = 10;
 
+        // Default temperature band constants, representing the fraction of
+        // the world that should be a given temperature.
+        private static readonly double TempRatioHot = 0.10;
+        private static readonly double TempRatioWarm = 0.22;
+        private static readonly double TempRatioTemperate = 0.36;
+        private static readonly double TempRatioCool = 0.22;
+        private static readonly double TempRatioCold = 0.10;
+
         /**
          * <summary>
          * WorldGenerator constructor requires a HexMap, which will hold the
@@ -149,6 +157,97 @@ namespace WorldGen
                     List<Coords> landAndShore = mass.hexes.Union(mass.shoreHexes).ToList();
                     List<Coords> riverHexes = rEx.Expand(landAndShore, totalRiverHexes);
                     totalRiverHexes -= riverHexes.Count;
+                }
+
+                // Temperature
+                SetTemperatures(2.0);
+            }
+        }
+
+        /**
+         * <summary>
+         * Sets temperatures for hexes in the nascent world.
+         * Currenlty, temperature is based solely on latitude, with hexes closer
+         * to the equator (center of the map) being warmer, and hexes closer to
+         * the poles (top and bottom of the map) being cooler.
+         * This can be scaled for warmer or cooler worlds.
+         * </summary>
+         * <param name="scale">Scaling factor. At values greater than 1.0 the
+         * world will be cooler overall, and at values less than 1.0 it will
+         * be warmer. At extreme values (approaching 0.0 or 2.0), temperature
+         * levels on the opposite extreme will not exist in the world.</param>
+         */
+        public void SetTemperatures(double scale = 1.0)
+        {
+            // first locate the equator
+            int equatorRow = map.Height / 2;
+            int currBand, coldBand;
+            currBand = coldBand = (int)(equatorRow * TempRatioCold);
+            int coolBand = (currBand += (int)(equatorRow * TempRatioCool));
+            int temperateBand = (currBand += (int)(equatorRow * TempRatioTemperate));
+            int warmBand = (currBand += (int)(equatorRow * TempRatioWarm));
+            int hotBand = (currBand += (int)(equatorRow * TempRatioHot));
+
+
+            bool flip = false;
+            if (scale < 1.0)
+            {
+                flip = true;
+                scale = 2.0 - scale;
+
+                // take abs(band row - equatorRow) of each band
+                coldBand = Math.Abs(coldBand - equatorRow);
+                coolBand = Math.Abs(coolBand - equatorRow);
+                temperateBand = Math.Abs(temperateBand - equatorRow);
+                warmBand = Math.Abs(warmBand - equatorRow);
+                hotBand = Math.Abs(hotBand - equatorRow);
+            }
+            coldBand = (int)(coldBand * scale);
+            coolBand = (int)(coolBand * scale);
+            temperateBand = (int)(temperateBand * scale);
+            warmBand = (int)(warmBand * scale);
+            hotBand = (int)(hotBand * scale);
+
+            if (flip)
+            {
+                // take abs(band row - equatorRow) of each band
+                coldBand = equatorRow - coldBand;
+                coolBand = equatorRow - coolBand;
+                temperateBand = equatorRow - temperateBand;
+                warmBand = equatorRow - warmBand;
+                hotBand =  equatorRow - hotBand;
+            }
+
+
+            for (int y = 0; y < equatorRow; y++)
+            {
+                for (int x = 0; x < map.Width; x++)
+                {
+                    if (y < coldBand)
+                    {
+                        map.SetTemperatureAt(new Coords(x, y), Hex.TemperatureLevel.Cold);
+                        map.SetTemperatureAt(new Coords(x, map.Height - 1 - y), Hex.TemperatureLevel.Cold);
+                    }
+                    else if (y < coolBand)
+                    {
+                        map.SetTemperatureAt(new Coords(x, y), Hex.TemperatureLevel.Cool);
+                        map.SetTemperatureAt(new Coords(x, map.Height - 1 - y), Hex.TemperatureLevel.Cool);
+                    }
+                    else if (y < temperateBand)
+                    {
+                        map.SetTemperatureAt(new Coords(x, y), Hex.TemperatureLevel.Temperate);
+                        map.SetTemperatureAt(new Coords(x, map.Height - 1 - y), Hex.TemperatureLevel.Temperate);
+                    }
+                    else if (y < warmBand)
+                    {
+                        map.SetTemperatureAt(new Coords(x, y), Hex.TemperatureLevel.Warm);
+                        map.SetTemperatureAt(new Coords(x, map.Height - 1 - y), Hex.TemperatureLevel.Warm);
+                    }
+                    else
+                    {
+                        map.SetTemperatureAt(new Coords(x, y), Hex.TemperatureLevel.Hot);
+                        map.SetTemperatureAt(new Coords(x, map.Height - 1 - y), Hex.TemperatureLevel.Hot);
+                    }
                 }
             }
         }

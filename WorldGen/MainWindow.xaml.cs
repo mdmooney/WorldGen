@@ -210,6 +210,14 @@ namespace WorldGen
             return rv;
         }
 
+        private void RecolorHexMap(Func<Coords, Color> colorMethod)
+        {
+            foreach (MapHexagon mapHex in _mapHexagons)
+            {
+                mapHex.Hexagon.Fill = new SolidColorBrush(colorMethod(mapHex.Loc));
+            }
+        }
+
         private void LandmassViewClick(object sender, RoutedEventArgs e)
         {
             RecolorHexMap(hexMap.BaseColorAt);
@@ -228,12 +236,9 @@ namespace WorldGen
             DrawHexMap(hexMap, hexMap.BaseColorAt);
         }
 
-        private void RecolorHexMap(Func<Coords, Color> colorMethod)
+        private void TemperatureViewClick(object sender, RoutedEventArgs e)
         {
-            foreach (MapHexagon mapHex in _mapHexagons)
-            {
-                mapHex.Hexagon.Fill = new SolidColorBrush(colorMethod(mapHex.Loc));
-            }
+            RecolorHexMap(hexMap.TemperatureColorAt);
         }
     }
 }

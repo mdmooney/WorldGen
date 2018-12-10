@@ -53,6 +53,20 @@ namespace WorldGen
         }
 
         /**
+        * <summary>
+        * This enum defines possible temperature levels for a hex.
+        * </summary>
+        */
+        public enum TemperatureLevel
+        {
+            Cold,
+            Cool,
+            Temperate,
+            Warm,
+            Hot
+        }
+
+        /**
          * <summary>
          * This enum standardizes ordering nad naming for the sides of the hex.
          * "Nil" is considered to be a side without meaning, and is used when
@@ -141,6 +155,8 @@ namespace WorldGen
          */
         public ElevationLevel Elevation { get; set; } = ElevationLevel.Low;
 
+        public TemperatureLevel Temperature { get; set; } = TemperatureLevel.Temperate;
+
         /**
          * <summary>
          * Whether this hex is valid for the placement of land or not.
@@ -222,7 +238,6 @@ namespace WorldGen
             return MainRiverSegment != null;
         }
 
-
         /**
          * <summary>
          * Method to display a Hex as a char, used for console display.
@@ -289,6 +304,27 @@ namespace WorldGen
                     return Colors.Gold;
                 case ElevationLevel.High:
                     return Colors.LawnGreen;
+                default:
+                    return Colors.Magenta;
+            }
+        }
+
+        public Color GetTemperatureColor()
+        {
+            if (Type == HexType.Ocean || Type == HexType.Shore)
+                return GetBaseColor();
+            switch (Temperature)
+            {
+                case TemperatureLevel.Cold:
+                    return Colors.DodgerBlue;
+                case TemperatureLevel.Cool:
+                    return Colors.Turquoise;
+                case TemperatureLevel.Temperate:
+                    return Colors.GreenYellow;
+                case TemperatureLevel.Warm:
+                    return Colors.Gold;
+                case TemperatureLevel.Hot:
+                    return Colors.OrangeRed;
                 default:
                     return Colors.Magenta;
             }
