@@ -22,7 +22,7 @@ namespace WorldGen
         /// <summary>
         /// Underlying HexExpander used to carry out the layered expansion.
         /// </summary>
-        public HexExpander Expander { get; private set; }
+        public LayeredExpander Expander { get; private set; }
 
         /// <summary>
         /// List of coords valid for layered expansion.
@@ -52,9 +52,9 @@ namespace WorldGen
          * <param name="hexExpander">HexExpander that will carry out expansion.</param>
          * <param name="validCoords">Coords that may be expanded in.</param>
          */
-        public LayeredExpansion(HexExpander hexExpander, List<Coords> validCoords)
+        public LayeredExpansion(LayeredExpander layeredExpander, List<Coords> validCoords)
         {
-            Expander = hexExpander;
+            Expander = layeredExpander;
             ValidCoords = validCoords;
         }
 
@@ -68,9 +68,9 @@ namespace WorldGen
          * <param name="lowerProportionBound">Lower bound of hex proportioning.</param>
          * <param name="upperProportionBound">Upper bound of hex proportioning.</param>
          */
-        public LayeredExpansion(HexExpander hexExpander, List<Coords> validCoords,
+        public LayeredExpansion(LayeredExpander layeredExpander, List<Coords> validCoords,
             double lowerProportionBound, double upperProportionBound)
-            : this (hexExpander, validCoords)
+            : this (layeredExpander, validCoords)
         {
             LowerProportionBound = lowerProportionBound;
             UpperProportionBound = upperProportionBound;
