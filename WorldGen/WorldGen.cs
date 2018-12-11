@@ -137,10 +137,12 @@ namespace WorldGen
                 layered.Expand(passes);
 
                 // Rivers
-                passes = rnd.Next(1, 5);
-                int totalRiverHexes = 50;
+                passes = rnd.Next(1, 20);
+                int totalRiverHexes = mass.TotalHexes / 20;
                 for (int pass = 1; pass <= passes; pass++)
                 {
+                    double fraction = rnd.NextDouble();
+                    int riverHexesThisRound = (int)(totalRiverHexes * fraction);
                     RiverExpander rEx = new RiverExpander(map);
                     List<Coords> landAndShore = mass.Hexes.Union(mass.ShoreHexes).ToList();
                     List<Coords> riverHexes = rEx.Expand(landAndShore, totalRiverHexes);
