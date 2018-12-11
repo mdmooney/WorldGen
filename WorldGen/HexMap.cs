@@ -208,6 +208,30 @@ namespace WorldGen
             return _map[coords.x, coords.y].GetHumidityColor();
         }
 
+        public Tuple<Hex.TemperatureLevel, Hex.HumidityLevel> GetTemperatureAndHumidityAt(Coords coords)
+        {
+            Hex hex = GetHexAt(coords);
+            Tuple<Hex.TemperatureLevel, Hex.HumidityLevel> rv 
+                = new Tuple<Hex.TemperatureLevel, Hex.HumidityLevel>(hex.Temperature, hex.Humidity);
+            return rv;
+        }
+
+        public Biome GetBiomeAt(Coords coords)
+        {
+            return GetHexAt(coords).HexBiome;
+        }
+
+        public void SetBiomeAt(Biome biome, Coords coords)
+        {
+            Hex hex = GetHexAt(coords);
+            hex.HexBiome = biome;
+        }
+
+        public Color BiomeColorAt(Coords coords)
+        {
+            return GetHexAt(coords).GetBiomeColor();
+        }
+
         /**
          * <summary>
          * Sets the type of the Hex at specified Coords to HexType.Land, and updates

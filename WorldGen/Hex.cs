@@ -183,6 +183,8 @@ namespace WorldGen
          */
         public HumidityLevel Humidity { get; set; } = HumidityLevel.Humid;
 
+        public Biome HexBiome { get; set; }
+
         /**
          * <summary>
          * Whether this hex is valid for the placement of land or not.
@@ -379,7 +381,7 @@ namespace WorldGen
                 case HumidityLevel.Humid:
                     return Colors.DeepSkyBlue;
                 case HumidityLevel.SemiHumid:
-                    return Colors.Turquoise;
+                    return Colors.MediumSpringGreen;
                 case HumidityLevel.Average:
                     return Colors.GreenYellow;
                 case HumidityLevel.SemiArid:
@@ -389,6 +391,13 @@ namespace WorldGen
                 default:
                     return Colors.Magenta;
             }
+        }
+
+        public Color GetBiomeColor()
+        {
+            if (HexBiome == null)
+                return GetBaseColor();
+            return HexBiome.BiomeColor;
         }
 
     }

@@ -19,7 +19,7 @@
             <Grid x:Name="HexMapGrid"/>
         </ScrollViewer>
         <Rectangle Grid.Column="1" VerticalAlignment="Stretch" Width="1" Stroke="Black" Margin="2"/>
-        <UniformGrid VerticalAlignment="Top" Margin="5" Rows="6" HorizontalAlignment="Stretch" Grid.Row="0" Grid.Column="2">
+        <UniformGrid VerticalAlignment="Top" Margin="5" Rows="8" HorizontalAlignment="Stretch" Grid.Row="0" Grid.Column="2">
             <Button Grid.Row="0" x:Name="NewWorldButton" Margin="5" HorizontalAlignment="Stretch" Click="NewWorldClick" >
                 <TextBlock Text="Generate New World" TextWrapping="Wrap" TextAlignment="Center"/>
             </Button>
@@ -28,6 +28,7 @@
             <Button Grid.Row="3" Margin="5" Click="HeightViewClick">Height Levels</Button>
             <Button Grid.Row="4" Margin="5" Click="TemperatureViewClick">Temperature</Button>
             <Button Grid.Row="5" Margin="5" Click="HumidityViewClick">Humidity</Button>
+            <Button Grid.Row="6" Margin="5" Click="BiomeViewClick">Biomes</Button>
         </UniformGrid>
     </Grid>
 </Window>

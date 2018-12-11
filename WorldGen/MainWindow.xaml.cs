@@ -245,5 +245,10 @@ namespace WorldGen
         {
             RecolorHexMap(hexMap.HumidityColorAt);
         }
+
+        private void BiomeViewClick(object sender, RoutedEventArgs e)
+        {
+            RecolorHexMap(hexMap.BiomeColorAt);
+        }
     }
 }

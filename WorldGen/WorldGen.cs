@@ -40,17 +40,17 @@ namespace WorldGen
 
         // Temperature thresholds, in arbitrary units. These define the
         // ranges for hex temperature determination; see SetTemperatures().
-        private static readonly int TempThreshHot = 80;
+        private static readonly int TempThreshHot = 75;
         private static readonly int TempThreshWarm = 37;
         private static readonly int TempThreshCool = -37;
-        private static readonly int TempThreshCold = -80;
+        private static readonly int TempThreshCold = -75;
 
         // Default arbitrary temperature units for the poles and equator.
         private static readonly int DefaultPoleTemp = -100;
         private static readonly int DefaultEquatorTemp = 100;
 
         // Arbitrary temperature unit adjustment per additional level of elevation.
-        private static readonly int TempHeightAdjust = -5;
+        private static readonly int TempHeightAdjust = -7;
 
         /**
          * <summary>
