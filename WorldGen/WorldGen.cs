@@ -22,10 +22,10 @@ namespace WorldGen
         /// </summary>
         private class Landmass
         {
-            public int totalHexes;
-            public int remainingHexes;
-            public List<Coords> hexes = new List<Coords>();
-            public List<Coords> shoreHexes = new List<Coords>();
+            public int TotalHexes;
+            public int RemainingHexes;
+            public List<Coords> Hexes = new List<Coords>();
+            public List<Coords> ShoreHexes = new List<Coords>();
         }
 
         private HexMap map;
@@ -89,7 +89,7 @@ namespace WorldGen
                 }
 
                 remainingHexes -= massHexes;
-                landmass.totalHexes = landmass.remainingHexes = massHexes;
+                landmass.TotalHexes = landmass.RemainingHexes = massHexes;
                 landmasses.Add(landmass);
             }
         }
@@ -110,11 +110,11 @@ namespace WorldGen
                 Landmass mass = landmasses[i];
                 List<Coords> allCoords = map.GetAllCoords();
                 LandmassExpander lEx = new LandmassExpander(map);
-                mass.hexes = lEx.Expand(allCoords, mass.totalHexes);
-                mass.totalHexes = mass.hexes.Count;
+                mass.Hexes = lEx.Expand(allCoords, mass.TotalHexes);
+                mass.TotalHexes = mass.Hexes.Count;
 
                 // Create shore/shallow water hexes adjacent to each hex of this landmass
-                foreach (Coords owned in mass.hexes)
+                foreach (Coords owned in mass.Hexes)
                 {
                     if (map.BordersOcean(owned))
                     {
@@ -122,7 +122,7 @@ namespace WorldGen
                         foreach (Coords shoreCoords in shoreHexes)
                         {
                             map.SetTypeAt(shoreCoords, Hex.HexType.Shore);
-                            mass.shoreHexes.Add(shoreCoords);
+                            mass.ShoreHexes.Add(shoreCoords);
                         }
                     }
                 }
@@ -131,7 +131,7 @@ namespace WorldGen
                 // Pick a number of passes; a range of the total number of
                 // elements in the enum works best
                 int passes = rnd.Next(1, 5);
-                List<Coords> eleHexes = new List<Coords>(mass.hexes);
+                List<Coords> eleHexes = new List<Coords>(mass.Hexes);
                 HeightExpander hEx = new HeightExpander(map);
                 LayeredExpansion layered = new LayeredExpansion(hEx, eleHexes, 0.6, 0.8);
                 layered.Expand(passes);
@@ -142,7 +142,7 @@ namespace WorldGen
                 for (int pass = 1; pass <= passes; pass++)
                 {
                     RiverExpander rEx = new RiverExpander(map);
-                    List<Coords> landAndShore = mass.hexes.Union(mass.shoreHexes).ToList();
+                    List<Coords> landAndShore = mass.Hexes.Union(mass.ShoreHexes).ToList();
                     List<Coords> riverHexes = rEx.Expand(landAndShore, totalRiverHexes);
                     totalRiverHexes -= riverHexes.Count;
                 }
@@ -152,10 +152,29 @@ namespace WorldGen
 
                 // Humidity
                 passes = rnd.Next(1, 5);
-                List<Coords> humiHexes = new List<Coords>(mass.hexes);
+                List<Coords> humiHexes = new List<Coords>(mass.Hexes);
                 HumidityExpander humEx = new HumidityExpander(map);
                 layered = new LayeredExpansion(humEx, humiHexes, 0.6, 0.8);
                 layered.Expand(passes);
+
+                // Biomes
+                BiomeExpander bioEx;
+                List<Coords> bioHexes = new List<Coords>(mass.Hexes);
+                int tenPercent = mass.TotalHexes / 10;
+
+                while (bioHexes.Count > 0)
+                {
+                    int expandThisRound = bioHexes.Count;
+                    if (expandThisRound > tenPercent)
+                    {
+                        double fraction = rnd.NextDouble() / 2.0;
+                        expandThisRound = (int)(expandThisRound * fraction);
+                    }
+
+                    bioEx = new BiomeExpander(map);
+                    var placedCoords = bioEx.Expand(bioHexes, expandThisRound);
+                    bioHexes.RemoveAll(x => placedCoords.Contains(x));
+                }
             }
         }
 
@@ -191,7 +210,6 @@ namespace WorldGen
             int gradStep = (DefaultEquatorTemp - DefaultPoleTemp) / (equatorRow);
             bool stepFlipped = false;
 
-            //
             for (int y = 0, currTemp = DefaultPoleTemp; y < map.Height; y++)
             {
                 // flip the temperature gradient after we hit the equator

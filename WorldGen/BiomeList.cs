@@ -34,13 +34,14 @@ namespace WorldGen
          */
         private void BiomeSetup()
         {
-            Biome tundra = new Biome("tundra", Colors.White);
+            Biome tundra = new Biome("tundra", Colors.Azure);
             tundra.AddTemperature(Hex.TemperatureLevel.Cold);
             tundra.AddHumidity(Hex.HumidityLevel.Arid);
             tundra.AddHumidity(Hex.HumidityLevel.SemiArid);
+            tundra.AddHumidity(Hex.HumidityLevel.Average);
             Biomes.Add(tundra);
 
-            Biome conifers = new Biome("coniferous forest", Colors.SeaGreen);
+            Biome conifers = new Biome("coniferous forest", Colors.LightSeaGreen);
             conifers.AddTemperature(Hex.TemperatureLevel.Cold);
             conifers.AddTemperature(Hex.TemperatureLevel.Cool);
             conifers.AddHumidity(Hex.HumidityLevel.Average);
@@ -71,25 +72,48 @@ namespace WorldGen
             broadleafs.AddHumidity(Hex.HumidityLevel.Average);
             broadleafs.AddHumidity(Hex.HumidityLevel.SemiHumid);
             broadleafs.AddHumidity(Hex.HumidityLevel.Humid);
+            Biomes.Add(broadleafs);
 
             Biome desert = new Biome("desert", Colors.Orange);
             desert.AddTemperature(Hex.TemperatureLevel.Hot);
+            desert.AddTemperature(Hex.TemperatureLevel.Warm);
             desert.AddHumidity(Hex.HumidityLevel.Arid);
             desert.AddHumidity(Hex.HumidityLevel.SemiArid);
             Biomes.Add(desert);
 
-            Biome savanna = new Biome("savanna", Colors.Brown);
+            Biome savanna = new Biome("savanna", Colors.Gold);
             savanna.AddTemperature(Hex.TemperatureLevel.Hot);
             savanna.AddHumidity(Hex.HumidityLevel.Average);
             savanna.AddHumidity(Hex.HumidityLevel.SemiHumid);
             savanna.AddHumidity(Hex.HumidityLevel.SemiArid);
             Biomes.Add(savanna);
 
-            Biome jungle = new Biome("jungle", Colors.LawnGreen);
+            Biome jungle = new Biome("jungle", Colors.SpringGreen);
             jungle.AddTemperature(Hex.TemperatureLevel.Hot);
             jungle.AddHumidity(Hex.HumidityLevel.SemiHumid);
             jungle.AddHumidity(Hex.HumidityLevel.Humid);
             Biomes.Add(jungle);
+
+            Biome woodland = new Biome("woodland", Colors.OliveDrab);
+            woodland.AddTemperature(Hex.TemperatureLevel.Temperate);
+            woodland.AddTemperature(Hex.TemperatureLevel.Warm);
+            woodland.AddHumidity(Hex.HumidityLevel.SemiArid);
+            woodland.AddHumidity(Hex.HumidityLevel.SemiHumid);
+            woodland.AddHumidity(Hex.HumidityLevel.Average);
+            Biomes.Add(woodland);
+
+            Biome swamp = new Biome("swamp", Colors.Brown);
+            swamp.AddTemperature(Hex.TemperatureLevel.Hot);
+            swamp.AddTemperature(Hex.TemperatureLevel.Warm);
+            swamp.AddHumidity(Hex.HumidityLevel.SemiHumid);
+            swamp.AddHumidity(Hex.HumidityLevel.Humid);
+            //Biomes.Add(swamp);
+
+            Biome taiga = new Biome("taiga", Colors.Teal);
+            taiga.AddTemperature(Hex.TemperatureLevel.Cold);
+            taiga.AddHumidity(Hex.HumidityLevel.Humid);
+            taiga.AddHumidity(Hex.HumidityLevel.SemiHumid);
+            Biomes.Add(taiga);
         }
 
         public Biome SelectBiome(Hex.TemperatureLevel temperature, Hex.HumidityLevel humidity)

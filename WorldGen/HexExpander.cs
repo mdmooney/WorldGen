@@ -114,6 +114,7 @@ namespace WorldGen
                     if (placedSeed)
                     {
                         _remainingHexes--;
+                        rv.Add(seedCoords);
                         unexpanded.Add(seedCoords);
                         continue;
                     }
