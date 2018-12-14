@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace WorldGen
 {
@@ -30,6 +31,8 @@ namespace WorldGen
 
         private HexMap map;
         private List<Landmass> landmasses;
+
+        private Random rnd;
 
         // Ratio of land:water in this world. Currently a constant at 3:7,
         // but will be alterable by the user later.
@@ -65,7 +68,7 @@ namespace WorldGen
          */
         public WorldGenerator(HexMap map)
         {
-            Random rnd = new Random();
+            rnd = new Random();
             this.map = map;
             int worldTotal = (map.Width * map.Height);
             double overallTotalDec = (double)worldTotal;
@@ -104,7 +107,7 @@ namespace WorldGen
          */
         public void Generate()
         {
-            Random rnd = new Random();
+            List<Task> taskList = new List<Task>();
             for (int i = 0; i < landmasses.Count; i++)
             {
                 Landmass mass = landmasses[i];
@@ -126,57 +129,62 @@ namespace WorldGen
                         }
                     }
                 }
+                Task t = Task.Factory.StartNew(() => FillLandmass(mass));
+            }
+            Task.WaitAll(taskList.ToArray());
+        }
 
-                // Elevation
-                // Pick a number of passes; a range of the total number of
-                // elements in the enum works best
-                int passes = rnd.Next(1, 5);
-                List<Coords> eleHexes = new List<Coords>(mass.Hexes);
-                HeightExpander hEx = new HeightExpander(map);
-                LayeredExpansion layered = new LayeredExpansion(hEx, eleHexes, 0.6, 0.8);
-                layered.Expand(passes);
+        private void FillLandmass(Landmass mass)
+        {
+            // Elevation
+            // Pick a number of passes; a range of the total number of
+            // elements in the enum works best
+            int passes = rnd.Next(1, 5);
+            List<Coords> eleHexes = new List<Coords>(mass.Hexes);
+            HeightExpander hEx = new HeightExpander(map);
+            LayeredExpansion layered = new LayeredExpansion(hEx, eleHexes, 0.6, 0.8);
+            layered.Expand(passes);
 
-                // Rivers
-                passes = rnd.Next(1, 20);
-                int totalRiverHexes = mass.TotalHexes / 20;
-                for (int pass = 1; pass <= passes; pass++)
+            // Rivers
+            passes = rnd.Next(1, 20);
+            int totalRiverHexes = mass.TotalHexes / 20;
+            for (int pass = 1; pass <= passes; pass++)
+            {
+                double fraction = rnd.NextDouble();
+                int riverHexesThisRound = (int)(totalRiverHexes * fraction);
+                RiverExpander rEx = new RiverExpander(map);
+                List<Coords> landAndShore = mass.Hexes.Union(mass.ShoreHexes).ToList();
+                List<Coords> riverHexes = rEx.Expand(landAndShore, totalRiverHexes);
+                totalRiverHexes -= riverHexes.Count;
+            }
+
+            // Temperature
+            SetTemperatures();
+
+            // Humidity
+            passes = rnd.Next(1, 5);
+            List<Coords> humiHexes = new List<Coords>(mass.Hexes);
+            HumidityExpander humEx = new HumidityExpander(map);
+            layered = new LayeredExpansion(humEx, humiHexes, 0.6, 0.8);
+            layered.Expand(passes);
+
+            // Biomes
+            BiomeExpander bioEx;
+            List<Coords> bioHexes = new List<Coords>(mass.Hexes);
+            int tenPercent = mass.TotalHexes / 10;
+
+            while (bioHexes.Count > 0)
+            {
+                int expandThisRound = bioHexes.Count;
+                if (expandThisRound > tenPercent)
                 {
-                    double fraction = rnd.NextDouble();
-                    int riverHexesThisRound = (int)(totalRiverHexes * fraction);
-                    RiverExpander rEx = new RiverExpander(map);
-                    List<Coords> landAndShore = mass.Hexes.Union(mass.ShoreHexes).ToList();
-                    List<Coords> riverHexes = rEx.Expand(landAndShore, totalRiverHexes);
-                    totalRiverHexes -= riverHexes.Count;
+                    double fraction = rnd.NextDouble() / 2.0;
+                    expandThisRound = (int)(expandThisRound * fraction);
                 }
 
-                // Temperature
-                SetTemperatures();
-
-                // Humidity
-                passes = rnd.Next(1, 5);
-                List<Coords> humiHexes = new List<Coords>(mass.Hexes);
-                HumidityExpander humEx = new HumidityExpander(map);
-                layered = new LayeredExpansion(humEx, humiHexes, 0.6, 0.8);
-                layered.Expand(passes);
-
-                // Biomes
-                BiomeExpander bioEx;
-                List<Coords> bioHexes = new List<Coords>(mass.Hexes);
-                int tenPercent = mass.TotalHexes / 10;
-
-                while (bioHexes.Count > 0)
-                {
-                    int expandThisRound = bioHexes.Count;
-                    if (expandThisRound > tenPercent)
-                    {
-                        double fraction = rnd.NextDouble() / 2.0;
-                        expandThisRound = (int)(expandThisRound * fraction);
-                    }
-
-                    bioEx = new BiomeExpander(map);
-                    var placedCoords = bioEx.Expand(bioHexes, expandThisRound);
-                    bioHexes.RemoveAll(x => placedCoords.Contains(x));
-                }
+                bioEx = new BiomeExpander(map);
+                var placedCoords = bioEx.Expand(bioHexes, expandThisRound);
+                bioHexes.RemoveAll(x => placedCoords.Contains(x));
             }
         }
 
