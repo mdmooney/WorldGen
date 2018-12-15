@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Shapes;
@@ -14,25 +15,30 @@ namespace WorldGen
         // List of all hexagons drawn on the map
         // Some small memory overhead for this, but it allows certain
         // operations like recoloring to be much more efficient
-        private List<MapHexagon> _mapHexagons;
+        public ObservableCollection<MapHexagon> MapHexagons { get; set; }
 
         private const double DEFAULT_SCALE = 10.0;
 
+        public double Scale { get; set; }
+
         // Dimensions of the map are fixed to 80 columns and 50 rows, for now
-        private static readonly int MaxX = 160;
-        private static readonly int MaxY = 100;
+        private static readonly int MaxX = 80;
+        private static readonly int MaxY = 50;
 
         private HexMap hexMap;
 
         public MainWindow()
         {
-            InitializeComponent();
+            DataContext = this;
 
-            _mapHexagons = new List<MapHexagon>();
+            MapHexagons = new ObservableCollection<MapHexagon>();
 
             GenerateNewWorld(MaxX, MaxY);
+            Scale = DEFAULT_SCALE;
 
             DrawHexMap(hexMap, hexMap.BaseColorAt);
+            if (MapHexagons.Count != 0)
+                InitializeComponent();
         }
 
         private void GenerateNewWorld(int width, int height)
@@ -44,7 +50,7 @@ namespace WorldGen
 
         private void DrawHexMap(HexMap map, Func<Coords, Color> colorMethod, Double scale = DEFAULT_SCALE)
         {
-            Point offset = GetHexagonOffsets(scale);
+            Point offset = GetHexagonOffsets();
 
             double x = 0.0;
             double y = 0.0;
@@ -57,9 +63,9 @@ namespace WorldGen
                 {
                     y += (offset.Y * 2);
                     Coords currCoords = new Coords(i, j);
-                    Polygon newHex = CreateHexagon(x, y, colorMethod(currCoords), scale);
-                    HexMapGrid.Children.Add(newHex);
-                    _mapHexagons.Add(new MapHexagon(currCoords, newHex));
+                    MapHexagon newMapHex = CreateHexagon(x, y, colorMethod(currCoords), currCoords);
+                    newMapHex.ChangeColor(map.BaseColorAt(currCoords));
+                    MapHexagons.Add(newMapHex);
                     if (map.IsRiverAt(currCoords))
                     {
                         RiverSegment seg = map.GetMainRiverSegmentAt(currCoords);
@@ -71,29 +77,21 @@ namespace WorldGen
             }
         }
 
-        private Point GetHexagonOffsets(Double scale = DEFAULT_SCALE)
+        private Point GetHexagonOffsets()
         {
             const double ANGLE = 1.0472;  // 60 degrees in radians
-            double point2x = Math.Cos(ANGLE) * scale;
-            double point2y = Math.Sin(ANGLE) * scale;
+            double point2x = Math.Cos(ANGLE) * Scale;
+            double point2y = Math.Sin(ANGLE) * Scale;
 
             return new Point(point2x, point2y);
         }
 
-        private Polygon CreateHexagon(Double oriX, Double oriY, Color color, Double scale = DEFAULT_SCALE)
+        private MapHexagon CreateHexagon(Double oriX, Double oriY, Color color, Coords mapCoords)
         {
-            Polygon myPolygon;
-            myPolygon = new Polygon()
-            {
-                Stroke = System.Windows.Media.Brushes.Black,
-                Fill = new SolidColorBrush(color),
-                StrokeThickness = 0.5,
-                HorizontalAlignment = HorizontalAlignment.Left,
-                VerticalAlignment = VerticalAlignment.Top
-            };
+            MapHexagon mapHex = new MapHexagon(mapCoords);
 
             // Calculate relative coords of points on angles; this only needs to be done once
-            Point offset = GetHexagonOffsets(scale);
+            Point offset = GetHexagonOffsets();
             double point2x = offset.X;
             double point2y = offset.Y;
 
@@ -101,7 +99,7 @@ namespace WorldGen
             double x = oriX;
             double y = oriY;
             System.Windows.Point Point1 = new System.Windows.Point(x, y);
-            x += scale;
+            x += Scale;
             System.Windows.Point Point2 = new System.Windows.Point(x, y);
             x += point2x;
             y += point2y;
@@ -109,7 +107,7 @@ namespace WorldGen
             x -= point2x;
             y += point2y;
             System.Windows.Point Point4 = new System.Windows.Point(x, y);
-            x -= scale;
+            x -= Scale;
             System.Windows.Point Point5 = new System.Windows.Point(x, y);
             x -= point2x;
             y -= point2y;
@@ -124,13 +122,13 @@ namespace WorldGen
                 Point5,
                 Point6
             };
-            myPolygon.Points = myPointCollection;
-            return myPolygon;
+            mapHex.Points = myPointCollection;
+            return mapHex;
         }
 
         private void DrawRiver(Double oriX, Double oriY, Hex.Side? entry, Hex.Side? exit, Double scale = DEFAULT_SCALE)
         {
-            Point offset = GetHexagonOffsets(scale);
+            Point offset = GetHexagonOffsets();
 
             Point center = new Point(oriX + offset.X, oriY + offset.Y);
 
@@ -148,7 +146,7 @@ namespace WorldGen
                     X2 = entryPoint.X,
                     Y2 = entryPoint.Y
                 };
-                HexMapGrid.Children.Add(entryLine);
+                //HexMapGrid.Children.Add(entryLine);
             }
 
             // draw exit line, if there is one
@@ -165,7 +163,7 @@ namespace WorldGen
                     X2 = exitPoint.X,
                     Y2 = exitPoint.Y
                 };
-                HexMapGrid.Children.Add(exitLine);
+                //HexMapGrid.Children.Add(exitLine);
             }
         }
 
@@ -173,7 +171,7 @@ namespace WorldGen
         // (upper-left point of the hexagon)
         private Point GetCoordsOfSideMidpoint(Double oriX, Double oriY, Hex.Side side, Double scale = DEFAULT_SCALE)
         {
-            Point offset = GetHexagonOffsets(scale);
+            Point offset = GetHexagonOffsets();
             Point rv = new Point(oriX, oriY);
             switch (side)
             {
@@ -212,9 +210,9 @@ namespace WorldGen
 
         private void RecolorHexMap(Func<Coords, Color> colorMethod)
         {
-            foreach (MapHexagon mapHex in _mapHexagons)
+            foreach (MapHexagon mapHex in MapHexagons)
             {
-                mapHex.Hexagon.Fill = new SolidColorBrush(colorMethod(mapHex.Loc));
+                mapHex.ChangeColor(colorMethod(mapHex.Loc));
             }
         }
 
@@ -230,8 +228,7 @@ namespace WorldGen
 
         private void NewWorldClick(object sender, RoutedEventArgs e)
         {
-            HexMapGrid.Children.Clear();
-            _mapHexagons.Clear();
+            MapHexagons.Clear();
             GenerateNewWorld(MaxX, MaxY);
             DrawHexMap(hexMap, hexMap.BaseColorAt);
         }

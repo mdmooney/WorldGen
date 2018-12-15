@@ -1,4 +1,6 @@
 ﻿using System.Windows.Shapes;
+using System.Windows;
+using System.Windows.Media;
 
 namespace WorldGen
 {
@@ -6,15 +8,24 @@ namespace WorldGen
     /// Simple struct for tracking polygons and their location on the internal
     /// grid. Used for easy recoloring, etc. of hexagons on the display panel.
     /// </summary>
-    struct MapHexagon
+    public class MapHexagon
     {
-        public Coords Loc;
-        public Polygon Hexagon;
+        public int X { get { return Loc.x; } }
+        public int Y { get { return Loc.y; } }
+        public Coords Loc { get; set; }
+        public PointCollection Points { get; set; }
+        public SolidColorBrush HexColor { get; }
 
-        public MapHexagon(Coords loc, Polygon hexagon)
+        public MapHexagon(Coords loc)
         {
             Loc = loc;
-            Hexagon = hexagon;
+            Points = new PointCollection();
+            HexColor = new SolidColorBrush();
+        }
+
+        public void ChangeColor(Color color)
+        {
+            HexColor.Color = color;
         }
     }
 }

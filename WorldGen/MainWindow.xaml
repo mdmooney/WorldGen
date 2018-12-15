@@ -16,7 +16,24 @@
             <ColumnDefinition Width="1*" />
         </Grid.ColumnDefinitions>
         <ScrollViewer Grid.Row="0" Grid.Column="0" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
-            <Grid x:Name="HexMapGrid"/>
+            <ItemsControl ItemsSource="{Binding MapHexagons}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <Grid/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemContainerStyle>
+                    <Style TargetType="ContentPresenter">
+                        <Setter Property="Canvas.Left" Value="0"/>
+                        <Setter Property="Canvas.Top" Value="0"/>
+                    </Style>
+                </ItemsControl.ItemContainerStyle>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Polygon Points="{Binding Points}" Fill="{Binding HexColor}" Stroke="Black" StrokeThickness="0.5"/>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
         </ScrollViewer>
         <Rectangle Grid.Column="1" VerticalAlignment="Stretch" Width="1" Stroke="Black" Margin="2"/>
         <UniformGrid VerticalAlignment="Top" Margin="5" Rows="8" HorizontalAlignment="Stretch" Grid.Row="0" Grid.Column="2">

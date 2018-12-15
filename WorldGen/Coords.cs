@@ -10,7 +10,7 @@ namespace WorldGen
      * Coords class, representing a pair of coordinates on a hex map.
      * </summary>
      */
-    class Coords
+    public class Coords
     {
         public int x;
         public int y;
