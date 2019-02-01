@@ -6,46 +6,72 @@
         xmlns:local="clr-namespace:WorldGen"
         mc:Ignorable="d"
         Title="MainWindow" Height="350" Width="525" MinHeight="350" MinWidth="525">
-    <Grid x:Name="HexGrid">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="4*" />
-            <ColumnDefinition Width="10" />
-            <ColumnDefinition Width="1*" />
-        </Grid.ColumnDefinitions>
-        <ScrollViewer Grid.Row="0" Grid.Column="0" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
-            <ItemsControl ItemsSource="{Binding MapHexagons}">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <Grid/>
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-                <ItemsControl.ItemContainerStyle>
-                    <Style TargetType="ContentPresenter">
-                        <Setter Property="Canvas.Left" Value="0"/>
-                        <Setter Property="Canvas.Top" Value="0"/>
-                    </Style>
-                </ItemsControl.ItemContainerStyle>
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <Polygon Points="{Binding Points}" Fill="{Binding HexColor}" Stroke="Black" StrokeThickness="0.5"/>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
-        </ScrollViewer>
-        <Rectangle Grid.Column="1" VerticalAlignment="Stretch" Width="1" Stroke="Black" Margin="2"/>
-        <UniformGrid VerticalAlignment="Top" Margin="5" Rows="8" HorizontalAlignment="Stretch" Grid.Row="0" Grid.Column="2">
-            <Button Grid.Row="0" x:Name="NewWorldButton" Margin="5" HorizontalAlignment="Stretch" Click="NewWorldClick" >
-                <TextBlock Text="Generate New World" TextWrapping="Wrap" TextAlignment="Center"/>
-            </Button>
-            <Label Grid.Row="1" HorizontalAlignment="Center" FontWeight="Bold">Views</Label>
-            <Button Grid.Row="2" Margin="5" Click="LandmassViewClick">Landmasses</Button>
-            <Button Grid.Row="3" Margin="5" Click="HeightViewClick">Height Levels</Button>
-            <Button Grid.Row="4" Margin="5" Click="TemperatureViewClick">Temperature</Button>
-            <Button Grid.Row="5" Margin="5" Click="HumidityViewClick">Humidity</Button>
-            <Button Grid.Row="6" Margin="5" Click="BiomeViewClick">Biomes</Button>
-        </UniformGrid>
-    </Grid>
+    <DockPanel>
+        <Menu DockPanel.Dock="Top" Width="Auto" Height="20">
+            <MenuItem Header="File">
+                <MenuItem Header="New" Click="NewWorldClick"/>
+                <MenuItem Header="Load"/>
+                <MenuItem Header="Save As"/>
+            </MenuItem>
+            <MenuItem Header="Data">
+                <MenuItem Header="Races"/>
+            </MenuItem>
+            <MenuItem Header="Settings">
+            </MenuItem>
+        </Menu>
+        <Grid x:Name="HexGrid" DockPanel.Dock="Bottom">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="4*" />
+                <ColumnDefinition Width="10" />
+                <ColumnDefinition Width="1*" />
+            </Grid.ColumnDefinitions>
+            <ScrollViewer Grid.Row="0" Grid.Column="0" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+                <Grid x:Name="InnerGrid">
+                    <ItemsControl ItemsSource="{Binding MapHexagons}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <Grid/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemContainerStyle>
+                            <Style TargetType="ContentPresenter">
+                                <Setter Property="Canvas.Left" Value="0"/>
+                                <Setter Property="Canvas.Top" Value="0"/>
+                            </Style>
+                        </ItemsControl.ItemContainerStyle>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Polygon Points="{Binding Points}" Fill="{Binding HexColor}" Stroke="Black" StrokeThickness="0.5"/>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </Grid>
+            </ScrollViewer>
+            <Canvas x:Name="TestGrid" Grid.Row="1" Grid.Column="0"/>
+            <Rectangle Grid.Column="1" VerticalAlignment="Stretch" Width="1" Stroke="Black" Margin="2"/>
+            <StackPanel Grid.Row="0" Grid.Column="2">
+                <TabControl>
+                    <TabItem Header="Views">
+                        <UniformGrid VerticalAlignment="Top" Margin="5" Rows="8" HorizontalAlignment="Stretch">
+                            <Button Grid.Row="2" Margin="5" Click="LandmassViewClick">Landmasses</Button>
+                            <Button Grid.Row="3" Margin="5" Click="HeightViewClick">Height Levels</Button>
+                            <Button Grid.Row="4" Margin="5" Click="TemperatureViewClick">Temperature</Button>
+                            <Button Grid.Row="5" Margin="5" Click="HumidityViewClick">Humidity</Button>
+                            <Button Grid.Row="6" Margin="5" Click="BiomeViewClick">Biomes</Button>
+                        </UniformGrid>
+                    </TabItem>
+                    <TabItem Header="Events">
+                        <UniformGrid VerticalAlignment="Top" Margin="5" Rows="8" HorizontalAlignment="Stretch">
+                            <Button Grid.Row="2" Margin="5">
+                                <TextBlock TextWrapping="Wrap" TextAlignment="Center">Generate a Race</TextBlock>
+                            </Button>
+                        </UniformGrid>
+                    </TabItem>
+                </TabControl>
+            </StackPanel>
+        </Grid>
+    </DockPanel>
 </Window>

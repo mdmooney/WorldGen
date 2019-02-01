@@ -35,10 +35,10 @@ namespace WorldGen
 
             GenerateNewWorld(MaxX, MaxY);
             Scale = DEFAULT_SCALE;
+            
+            InitializeComponent();
 
             DrawHexMap(hexMap, hexMap.BaseColorAt);
-            if (MapHexagons.Count != 0)
-                InitializeComponent();
         }
 
         private void GenerateNewWorld(int width, int height)
@@ -146,7 +146,7 @@ namespace WorldGen
                     X2 = entryPoint.X,
                     Y2 = entryPoint.Y
                 };
-                //HexMapGrid.Children.Add(entryLine);
+                //InnerGrid.Children.Add(entryLine);
             }
 
             // draw exit line, if there is one
@@ -163,7 +163,7 @@ namespace WorldGen
                     X2 = exitPoint.X,
                     Y2 = exitPoint.Y
                 };
-                //HexMapGrid.Children.Add(exitLine);
+                //InnerGrid.Children.Add(exitLine);
             }
         }
 
