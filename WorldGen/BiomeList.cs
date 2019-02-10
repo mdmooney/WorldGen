@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media;
+using System.Xml.Linq;
 
 namespace WorldGen
 {
@@ -28,92 +29,53 @@ namespace WorldGen
 
         /**
          * <summary>
-         * Method to setup hardcoded biomes.
-         * This will eventually be replaced by a data file of some kind.
+         * Method to setup biomes, as read from the biomes definition file (currently hardcoded
+         * to the CWD, with the name "biome_defs.xml").
          * </summary>
          */
         private void BiomeSetup()
         {
-            Biome tundra = new Biome("tundra", Colors.Azure);
-            tundra.AddTemperature(Hex.TemperatureLevel.Cold);
-            tundra.AddHumidity(Hex.HumidityLevel.Arid);
-            tundra.AddHumidity(Hex.HumidityLevel.SemiArid);
-            tundra.AddHumidity(Hex.HumidityLevel.Average);
-            Biomes.Add(tundra);
+            XDocument biomeDefs = XDocument.Load("biome_defs.xml");
+            XElement defsRoot = biomeDefs.Element("root");
+            var temperatureMax = Enum.GetValues(typeof(Hex.TemperatureLevel)).Cast<int>().Last();
+            var humidityMax = Enum.GetValues(typeof(Hex.HumidityLevel)).Cast<int>().Last();
+            foreach (XElement node in defsRoot.Elements())
+            {
+                // check for disabling attribute, skip this node if it's set to true
+                XAttribute disabledAttr = node.Attribute("disabled");
+                if (disabledAttr != null && disabledAttr.Value == "true")
+                    continue;
 
-            Biome conifers = new Biome("coniferous forest", Colors.LightSeaGreen);
-            conifers.AddTemperature(Hex.TemperatureLevel.Cold);
-            conifers.AddTemperature(Hex.TemperatureLevel.Cool);
-            conifers.AddHumidity(Hex.HumidityLevel.Average);
-            conifers.AddHumidity(Hex.HumidityLevel.SemiHumid);
-            conifers.AddHumidity(Hex.HumidityLevel.Humid);
-            Biomes.Add(conifers);
+                string biomeName = node.Element("name").Value;
+                string biomeColorStr = node.Element("hex_color").Value;
 
-            Biome shrubland = new Biome("shrubland", Colors.Yellow);
-            shrubland.AddTemperature(Hex.TemperatureLevel.Cool);
-            shrubland.AddTemperature(Hex.TemperatureLevel.Temperate);
-            shrubland.AddTemperature(Hex.TemperatureLevel.Warm);
-            shrubland.AddHumidity(Hex.HumidityLevel.Arid);
-            shrubland.AddHumidity(Hex.HumidityLevel.SemiArid);
-            Biomes.Add(shrubland);
+                // Regardless of how long the color string is, we'll only process 3 bytes' worth.
+                // Beyond that, the string has no meaning.
+                int numChars = Math.Min(biomeColorStr.Length, 6);
+                byte[] colorBytes = new byte[3];
+                for (int i = 0; i < numChars; i += 2)
+                    colorBytes[i / 2] = Convert.ToByte(biomeColorStr.Substring(i, 2), 16);
 
-            Biome grassland = new Biome("grassland", Colors.GreenYellow);
-            grassland.AddTemperature(Hex.TemperatureLevel.Cool);
-            grassland.AddTemperature(Hex.TemperatureLevel.Temperate);
-            grassland.AddTemperature(Hex.TemperatureLevel.Warm);
-            grassland.AddHumidity(Hex.HumidityLevel.SemiArid);
-            grassland.AddHumidity(Hex.HumidityLevel.Average);
-            Biomes.Add(grassland);
+                int biomeColorVal = int.Parse(biomeColorStr, System.Globalization.NumberStyles.HexNumber);
+                Color biomeColor = Color.FromArgb(0xff, colorBytes[0], colorBytes[1], colorBytes[2]); 
+                Biome newBiome = new Biome(biomeName, biomeColor);
+                
+                int temperatureLowerBound = Math.Max(int.Parse(node.Element("temperature_lb").Value), 0);
+                int temperatureUpperBound = Math.Min(int.Parse(node.Element("temperature_ub").Value), temperatureMax);
+                for (int i = temperatureLowerBound; i <= temperatureUpperBound; i++)
+                {
+                    newBiome.AddTemperature((Hex.TemperatureLevel)i);
+                }
 
-            Biome broadleafs = new Biome("broadleaf forest", Colors.ForestGreen);
-            broadleafs.AddTemperature(Hex.TemperatureLevel.Cool);
-            broadleafs.AddTemperature(Hex.TemperatureLevel.Temperate);
-            broadleafs.AddTemperature(Hex.TemperatureLevel.Warm);
-            broadleafs.AddHumidity(Hex.HumidityLevel.Average);
-            broadleafs.AddHumidity(Hex.HumidityLevel.SemiHumid);
-            broadleafs.AddHumidity(Hex.HumidityLevel.Humid);
-            Biomes.Add(broadleafs);
+                int humidityLowerBound = Math.Max(int.Parse(node.Element("humidity_lb").Value), 0);
+                int humidityUpperBound = Math.Min(int.Parse(node.Element("humidity_ub").Value), humidityMax);
+                for (int i = humidityLowerBound; i <= humidityUpperBound; i++)
+                {
+                    newBiome.AddHumidity((Hex.HumidityLevel)i);
+                }
 
-            Biome desert = new Biome("desert", Colors.Orange);
-            desert.AddTemperature(Hex.TemperatureLevel.Hot);
-            desert.AddTemperature(Hex.TemperatureLevel.Warm);
-            desert.AddHumidity(Hex.HumidityLevel.Arid);
-            desert.AddHumidity(Hex.HumidityLevel.SemiArid);
-            Biomes.Add(desert);
-
-            Biome savanna = new Biome("savanna", Colors.Gold);
-            savanna.AddTemperature(Hex.TemperatureLevel.Hot);
-            savanna.AddHumidity(Hex.HumidityLevel.Average);
-            savanna.AddHumidity(Hex.HumidityLevel.SemiHumid);
-            savanna.AddHumidity(Hex.HumidityLevel.SemiArid);
-            Biomes.Add(savanna);
-
-            Biome jungle = new Biome("jungle", Colors.SpringGreen);
-            jungle.AddTemperature(Hex.TemperatureLevel.Hot);
-            jungle.AddHumidity(Hex.HumidityLevel.SemiHumid);
-            jungle.AddHumidity(Hex.HumidityLevel.Humid);
-            Biomes.Add(jungle);
-
-            Biome woodland = new Biome("woodland", Colors.OliveDrab);
-            woodland.AddTemperature(Hex.TemperatureLevel.Temperate);
-            woodland.AddTemperature(Hex.TemperatureLevel.Warm);
-            woodland.AddHumidity(Hex.HumidityLevel.SemiArid);
-            woodland.AddHumidity(Hex.HumidityLevel.SemiHumid);
-            woodland.AddHumidity(Hex.HumidityLevel.Average);
-            Biomes.Add(woodland);
-
-            Biome swamp = new Biome("swamp", Colors.Brown);
-            swamp.AddTemperature(Hex.TemperatureLevel.Hot);
-            swamp.AddTemperature(Hex.TemperatureLevel.Warm);
-            swamp.AddHumidity(Hex.HumidityLevel.SemiHumid);
-            swamp.AddHumidity(Hex.HumidityLevel.Humid);
-            //Biomes.Add(swamp);
-
-            Biome taiga = new Biome("taiga", Colors.Teal);
-            taiga.AddTemperature(Hex.TemperatureLevel.Cold);
-            taiga.AddHumidity(Hex.HumidityLevel.Humid);
-            taiga.AddHumidity(Hex.HumidityLevel.SemiHumid);
-            Biomes.Add(taiga);
+                Biomes.Add(newBiome);
+            }
         }
 
         public Biome SelectBiome(Hex.TemperatureLevel temperature, Hex.HumidityLevel humidity)
