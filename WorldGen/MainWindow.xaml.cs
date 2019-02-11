@@ -22,8 +22,8 @@ namespace WorldGen
         public double Scale { get; set; }
 
         // Dimensions of the map are fixed to 80 columns and 50 rows, for now
-        private static readonly int MaxX = 80;
-        private static readonly int MaxY = 50;
+        private static readonly int MaxX = 25;
+        private static readonly int MaxY = 25;
 
         private HexMap hexMap;
 

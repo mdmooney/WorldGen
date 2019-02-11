@@ -30,6 +30,9 @@ namespace WorldGen
         // A hex grid is basically considered a staggered rectangular array of Hexes.
         private Hex[,] _map;
 
+        // List of landmasses
+        public List<Landmass> Landmasses { get; set; }
+
         // ------------ Getters ------------
 
         /**
@@ -636,6 +639,48 @@ namespace WorldGen
             }
 
             return rv;
+        }
+
+        public AffinityMap GetAffinitiesForLandmass(Landmass landmass)
+        {
+            if (!Landmasses.Contains(landmass))
+            {
+                throw new KeyNotFoundException("Tried to get affinities for a landmass that is not in this HexMap.");
+            }
+
+            if (landmass.Affinities == null)
+            {
+                var totalAffinityScore = new Dictionary<string, int>();
+                foreach (Coords coords in landmass.Hexes)
+                {
+                    Hex hex = GetHexAt(coords);
+                    AffinityMap affinities = hex.Affinities;
+                    foreach (var aspect in affinities.AspectList)
+                    {
+                        if (!totalAffinityScore.ContainsKey(aspect))
+                            totalAffinityScore[aspect] = 0;
+                        totalAffinityScore[aspect] += affinities.GetAffinity(aspect);
+                    }
+                }
+
+                AffinityMap newAffinityMap = new AffinityMap();
+
+                foreach (var aspect in totalAffinityScore.Keys)
+                {
+                    int score = totalAffinityScore[aspect];
+                    int affinity = score / landmass.TotalHexes;
+                    // don't allow 0 here; just weak affinities
+                    if (affinity == 0)
+                    {
+                        affinity = (score > 0) ? 1 : -1;
+                    }
+                    newAffinityMap.SetAffinity(aspect, affinity);
+                }
+
+                landmass.Affinities = newAffinityMap;
+            }
+
+            return landmass.Affinities;
         }
 
         /**

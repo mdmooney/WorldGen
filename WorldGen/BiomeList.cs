@@ -56,7 +56,6 @@ namespace WorldGen
                 for (int i = 0; i < numChars; i += 2)
                     colorBytes[i / 2] = Convert.ToByte(biomeColorStr.Substring(i, 2), 16);
 
-                int biomeColorVal = int.Parse(biomeColorStr, System.Globalization.NumberStyles.HexNumber);
                 Color biomeColor = Color.FromArgb(0xff, colorBytes[0], colorBytes[1], colorBytes[2]); 
                 Biome newBiome = new Biome(biomeName, biomeColor);
                 
@@ -73,6 +72,9 @@ namespace WorldGen
                 {
                     newBiome.AddHumidity((Hex.HumidityLevel)i);
                 }
+
+                string primaryAspect = node.Element("primary_aspect").Value;
+                newBiome.Affinities.MaximizeAffinity(primaryAspect);
 
                 Biomes.Add(newBiome);
             }

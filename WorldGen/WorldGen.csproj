@@ -54,12 +54,14 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="AffinityMap.cs" />
     <Compile Include="Biome.cs" />
     <Compile Include="BiomeExpander.cs" />
     <Compile Include="BiomeList.cs" />
     <Compile Include="HeightExpander.cs" />
     <Compile Include="HexExpander.cs" />
     <Compile Include="HumidityExpander.cs" />
+    <Compile Include="Landmass.cs" />
     <Compile Include="LandmassExpander.cs" />
     <Compile Include="LayeredExpander.cs" />
     <Compile Include="LayeredExpansion.cs" />

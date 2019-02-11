@@ -14,12 +14,21 @@ namespace WorldGen
         public HashSet<Hex.HumidityLevel> HumidityRange { get; private set; }
         public Color BiomeColor { get; private set; }
 
+        private AffinityMap _affinities;
+        public AffinityMap Affinities
+        {
+            // return a copy of affinity map when requested; biome affinities do not change
+            get { return _affinities;  }
+            private set { _affinities = value; }
+        }
+
         public Biome(string name)
         {
             Name = name;
             TemperatureRange = new HashSet<Hex.TemperatureLevel>();
             HumidityRange= new HashSet<Hex.HumidityLevel>();
             BiomeColor = Colors.Beige;
+            Affinities = new AffinityMap();
         }
 
         public Biome(string name, Color color) : this(name)

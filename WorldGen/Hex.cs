@@ -154,6 +154,66 @@ namespace WorldGen
             }
         }
 
+        private AffinityMap _affinities;
+
+        public AffinityMap Affinities
+        {
+            get
+            {
+                if (_affinities == null)
+                {
+                    if (HexBiome != null)
+                    {
+                        _affinities = HexBiome.Affinities;
+                    }
+                    else
+                    {
+                        _affinities = new AffinityMap();
+                    }
+
+                    switch (Elevation)
+                    {
+                        case ElevationLevel.Mid:
+                            _affinities.MaximizeAffinity("hill");
+                            break;
+                        case ElevationLevel.MidHigh:
+                        case ElevationLevel.High:
+                            _affinities.MaximizeAffinity("mountain");
+                            break;
+                        default:
+                            break;
+                    }
+
+                    switch (Temperature)
+                    {
+                        case TemperatureLevel.Cold:
+                            _affinities.MaximizeAffinity("cold");
+                            break;
+                        case TemperatureLevel.Hot:
+                            _affinities.MaximizeAffinity("hot");
+                            break;
+                        default:
+                            break;
+                    }
+
+                    switch (Humidity)
+                    {
+                        case HumidityLevel.Arid:
+                            _affinities.MaximizeAffinity("arid");
+                            break;
+                        case HumidityLevel.Humid:
+                            _affinities.MaximizeAffinity("humid");
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                return _affinities;
+            }
+
+            private set { _affinities = value; }
+        }
+
 
         /**
          * <summary>
