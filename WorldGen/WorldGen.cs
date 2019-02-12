@@ -118,21 +118,10 @@ namespace WorldGen
                         }
                     }
                 }
-                //Task t = Task.Factory.StartNew(() => FillLandmass(mass));
                 Task t = Task.Run(() => FillLandmass(mass));
                 taskList.Add(t);
             }
             Task.WaitAll(taskList.ToArray());
-
-            foreach (var mass in map.Landmasses)
-            {
-                AffinityMap affinities = map.GetAffinitiesForLandmass(mass);
-                Console.WriteLine("AffinityMap with " + affinities.Count + " members:");
-                foreach (var aspect in affinities.AspectList)
-                {
-                    Console.WriteLine("\t- '" + aspect + "' : " + affinities.GetAffinity(aspect));
-                }
-            }
         }
 
         private void FillLandmass(Landmass mass)

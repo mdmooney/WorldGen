@@ -35,6 +35,7 @@ namespace WorldGen
          */
         private void BiomeSetup()
         {
+            
             XDocument biomeDefs = XDocument.Load("biome_defs.xml");
             XElement defsRoot = biomeDefs.Element("root");
             var temperatureMax = Enum.GetValues(typeof(Hex.TemperatureLevel)).Cast<int>().Last();

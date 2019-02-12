@@ -55,12 +55,14 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="AffinityMap.cs" />
+    <Compile Include="AspectGlossary.cs" />
     <Compile Include="Biome.cs" />
     <Compile Include="BiomeExpander.cs" />
     <Compile Include="BiomeList.cs" />
     <Compile Include="HeightExpander.cs" />
     <Compile Include="HexExpander.cs" />
     <Compile Include="HumidityExpander.cs" />
+    <Compile Include="InvalidAspectException.cs" />
     <Compile Include="Landmass.cs" />
     <Compile Include="LandmassExpander.cs" />
     <Compile Include="LayeredExpander.cs" />
@@ -114,6 +116,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="aspect_defs.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="biome_defs.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

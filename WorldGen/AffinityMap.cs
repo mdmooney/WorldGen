@@ -13,6 +13,7 @@ namespace WorldGen
         private static readonly int MinAffinity = -5;
 
         private Dictionary<string, int> _affinities;
+        private AspectGlossary _aspectGlossary = AspectGlossary.GetInstance();
 
         public List<string> AspectList
         {
@@ -52,6 +53,12 @@ namespace WorldGen
 
         public void SetAffinity(string aspect, int val)
         {
+            // validate the aspect
+            if (!_aspectGlossary.Contains(aspect))
+            {
+                throw InvalidAspectException.FromAspect(aspect);
+            }
+
             // bound the affinity value
             int boundedVal = val;
             if (val > MaxAffinity) boundedVal = MaxAffinity;
@@ -81,5 +88,24 @@ namespace WorldGen
             return rv;
         }
 
+        public AffinityMap FilterByPool(string pool)
+        {
+            if (!_aspectGlossary.HasPool(pool))
+            {
+                return new AffinityMap(this);
+            }
+
+            var poolMembers = _aspectGlossary.GetPool(pool);
+            var theseAspects = _affinities.Keys;
+            var commonMembers = theseAspects.Intersect(poolMembers);
+
+            AffinityMap newMap = new AffinityMap();
+            foreach (var member in commonMembers)
+            {
+                newMap.SetAffinity(member, _affinities[member]);
+            }
+
+            return newMap;
+        }
     }
 }
