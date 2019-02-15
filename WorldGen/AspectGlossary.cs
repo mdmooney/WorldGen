@@ -66,7 +66,7 @@ namespace WorldGen
 
         public HashSet<string> GetPool(string pool)
         {
-            if (!HasPool(pool)) return null;
+            if (!HasPool(pool)) throw InvalidAspectException.FromPool(pool);
             return new HashSet<string>(_pools[pool]);
         }
 

@@ -22,5 +22,11 @@ namespace WorldGen
             string msg = "Invalid aspect: " + aspect;
             return new InvalidAspectException(msg);
         }
+
+        public static InvalidAspectException FromPool(string pool)
+        {
+            string msg = "Invalid aspect pool: " + pool;
+            return new InvalidAspectException(msg);
+        }
     }
 }

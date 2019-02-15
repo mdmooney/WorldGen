@@ -8,12 +8,28 @@ namespace WorldGen
 {
     class AffinityMap
     {
+
+        // Simple struct for associating aspects with a running affinity tally.
+        // Used for random selection of aspects weighted based on affinities.
+        struct AffinityTally
+        {
+            public int Tally;
+            public string Aspect;
+            public AffinityTally(int tally, string aspect)
+            {
+                Tally = tally;
+                Aspect = aspect;
+            }
+        }
+
         // Bounds for max and min aspect affinities
         private static readonly int MaxAffinity = 5;
         private static readonly int MinAffinity = -5;
 
         private Dictionary<string, int> _affinities;
         private AspectGlossary _aspectGlossary = AspectGlossary.GetInstance();
+
+        private static Random _rand = new Random();
 
         public List<string> AspectList
         {
@@ -107,5 +123,69 @@ namespace WorldGen
 
             return newMap;
         }
+
+        public string SelectAspectByAffinity()
+        {
+            if (Count == 0) return null;
+            if (Count == 1) return _affinities.First().Key;
+
+            AffinityTally[] tallies = new AffinityTally[Count];
+            int i = 0;
+            int tally = 0;
+
+            foreach (var kvp in _affinities.ToList())
+            {
+                tally += kvp.Value;
+                tallies[i++] = new AffinityTally(tally, kvp.Key);
+            }
+
+            int r = _rand.Next(tally + 1);
+
+            // modified binary search to get closest match
+            int low = 0;
+            int high = tallies.Length - 1;
+            while (low <= high)
+            {
+                int mid = (low + high) / 2;
+
+                if (r < tallies[mid].Tally)
+                    high = mid - 1;
+                else if (r > tallies[mid].Tally)
+                    low = mid + 1;
+                else
+                    return tallies[mid].Aspect;
+            }
+            return ((tallies[low].Tally - r) < (r - tallies[high].Tally)) ? tallies[low].Aspect : tallies[high].Aspect;
+        }
+
+        public void ResolveWildcardAgainstMap(string pool, int affinity, AffinityMap other)
+        {
+            AffinityMap filtered = other.FilterByPool(pool);
+            if (filtered.Count == 0)
+                ResolveWildcard(pool, affinity);
+            else
+            {
+                string aspect = filtered.SelectAspectByAffinity();
+                SetAffinity(aspect, affinity);
+            }
+        }
+
+        public void ResolveWildcard(string pool, int affinity)
+        {
+            var poolList = _aspectGlossary.GetPool(pool).ToList();
+            int i = _rand.Next(poolList.Count);
+            string aspect = poolList[i];
+
+            // make sure we're not overwriting an existing affinity
+            while (GetAffinity(aspect) != 0)
+            {
+                i = _rand.Next(poolList.Count);
+               aspect = poolList[i];
+            }
+
+            SetAffinity(poolList[i], affinity);
+        }
+
+
     }
 }
