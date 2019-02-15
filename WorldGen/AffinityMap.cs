@@ -8,20 +8,6 @@ namespace WorldGen
 {
     class AffinityMap
     {
-
-        // Simple struct for associating aspects with a running affinity tally.
-        // Used for random selection of aspects weighted based on affinities.
-        struct AffinityTally
-        {
-            public int Tally;
-            public string Aspect;
-            public AffinityTally(int tally, string aspect)
-            {
-                Tally = tally;
-                Aspect = aspect;
-            }
-        }
-
         // Bounds for max and min aspect affinities
         private static readonly int MaxAffinity = 5;
         private static readonly int MinAffinity = -5;
@@ -126,36 +112,14 @@ namespace WorldGen
 
         public string SelectAspectByAffinity()
         {
-            if (Count == 0) return null;
-            if (Count == 1) return _affinities.First().Key;
-
-            AffinityTally[] tallies = new AffinityTally[Count];
-            int i = 0;
-            int tally = 0;
+            var randomTable = new RandomTable<string>();
 
             foreach (var kvp in _affinities.ToList())
             {
-                tally += kvp.Value;
-                tallies[i++] = new AffinityTally(tally, kvp.Key);
+                randomTable.Add(kvp.Key, kvp.Value);
             }
 
-            int r = _rand.Next(tally + 1);
-
-            // modified binary search to get closest match
-            int low = 0;
-            int high = tallies.Length - 1;
-            while (low <= high)
-            {
-                int mid = (low + high) / 2;
-
-                if (r < tallies[mid].Tally)
-                    high = mid - 1;
-                else if (r > tallies[mid].Tally)
-                    low = mid + 1;
-                else
-                    return tallies[mid].Aspect;
-            }
-            return ((tallies[low].Tally - r) < (r - tallies[high].Tally)) ? tallies[low].Aspect : tallies[high].Aspect;
+            return randomTable.Roll();
         }
 
         public void ResolveWildcardAgainstMap(string pool, int affinity, AffinityMap other)
