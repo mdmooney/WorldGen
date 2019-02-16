@@ -1,28 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
-    <aspect_def>fire</aspect_def>
-    <aspect_def>water</aspect_def>
-    <aspect_def>earth</aspect_def>
     <aspect_def>air</aspect_def>
-    <aspect_def>mountain</aspect_def>
-    <aspect_def>tall</aspect_def>
-    <aspect_def>short</aspect_def>
-    <aspect_def>bearded</aspect_def>
-    <aspect_def>desert</aspect_def>
-    <aspect_def>forest</aspect_def>
-    <aspect_def>tundra</aspect_def>
-    <aspect_def>taiga</aspect_def>
-    <aspect_def>jungle</aspect_def>
-    <aspect_def>swamp</aspect_def>
-    <aspect_def>shrubland</aspect_def>
-    <aspect_def>grassland</aspect_def>
-    <aspect_def>savanna</aspect_def>
-    <aspect_def>woodland</aspect_def>
-    <aspect_def>cold</aspect_def>
-    <aspect_def>hot</aspect_def>
     <aspect_def>arid</aspect_def>
-    <aspect_def>humid</aspect_def>
+    <aspect_def>bearded</aspect_def>
+    <aspect_def>cold</aspect_def>
+    <aspect_def>desert</aspect_def>
+    <aspect_def>earth</aspect_def>
+    <aspect_def>fire</aspect_def>
+    <aspect_def>forest</aspect_def>
+    <aspect_def>grassland</aspect_def>
     <aspect_def>hill</aspect_def>
+    <aspect_def>hot</aspect_def>
+    <aspect_def>humid</aspect_def>
+    <aspect_def>jungle</aspect_def>
+    <aspect_def>mountain</aspect_def>
+    <aspect_def>savanna</aspect_def>
+    <aspect_def>short</aspect_def>
+    <aspect_def>shrubland</aspect_def>
+    <aspect_def>stocky</aspect_def>
+    <aspect_def>swamp</aspect_def>
+    <aspect_def>taiga</aspect_def>
+    <aspect_def>tall</aspect_def>
+    <aspect_def>tundra</aspect_def>
+    <aspect_def>underground</aspect_def>
+    <aspect_def>water</aspect_def>
+    <aspect_def>woodland</aspect_def>
     
     <rel_conceptual weight="-5">
         <aspect>fire</aspect>
@@ -51,6 +53,7 @@
         <aspect>savanna</aspect>
         <aspect>woodland</aspect>
         <aspect>mountain</aspect>
+        <aspect>underground</aspect>
     </pool>
     
     <pool name="elements">
@@ -64,5 +67,6 @@
         <aspect>tall</aspect>
         <aspect>short</aspect>
         <aspect>bearded</aspect>
+        <aspect>stocky</aspect>
     </pool>
 </root>

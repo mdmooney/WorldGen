@@ -21,6 +21,8 @@ namespace WorldGen
 
         private Random rnd;
 
+        private RaceGen _raceGen;
+
         // Ratio of land:water in this world. Currently a constant at 3:7,
         // but will be alterable by the user later.
         const double WORLD_RATIO = 0.30;
@@ -242,6 +244,19 @@ namespace WorldGen
 
                 currTemp += gradStep;
             }
+        }
+
+        public void GenerateRace()
+        {
+            if (_raceGen == null)
+                _raceGen = new RaceGen();
+
+            Landmass mass = map.GetRandomLandmass();
+            AffinityMap massAffinity = map.GetAffinitiesForLandmass(mass);
+            Race genRace = _raceGen.GenerateRace(massAffinity);
+            Console.WriteLine("Rolled race: " + genRace);
+            Console.WriteLine(genRace.Affinities);
+            Console.WriteLine("------------------");
         }
     }
 }

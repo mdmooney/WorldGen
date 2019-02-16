@@ -45,6 +45,8 @@ namespace WorldGen
                 else
                     return _table[mid].Item2;
             }
+            if (high < 0)
+                return _table[low].Item2;
             return ((_table[low].Item1 - r) < (r - _table[high].Item1)) ? _table[low].Item2 : _table[high].Item2;
         }
     }

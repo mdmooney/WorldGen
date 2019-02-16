@@ -33,6 +33,8 @@ namespace WorldGen
         // List of landmasses
         public List<Landmass> Landmasses { get; set; }
 
+        private static Random _rand = new Random();
+
         // ------------ Getters ------------
 
         /**
@@ -681,6 +683,12 @@ namespace WorldGen
             }
 
             return landmass.Affinities;
+        }
+
+        public Landmass GetRandomLandmass()
+        {
+            int r = _rand.Next(Landmasses.Count);
+            return Landmasses[r];
         }
 
         /**

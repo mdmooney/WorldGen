@@ -150,6 +150,54 @@ namespace WorldGen
             SetAffinity(poolList[i], affinity);
         }
 
+        public static int CombineAffinities(int val1, int val2)
+        {
+            return (val1 * val2) / MaxAffinity;
+        }
 
+        public AffinityMap CombineWith(AffinityMap other)
+        {
+            AffinityMap combined = new AffinityMap();
+            foreach (var aspect in _affinities.Keys)
+            {
+                int otherAffinity = other.GetAffinity(aspect);
+                if (otherAffinity != 0)
+                {
+                    int combinedVal = CombineAffinities(GetAffinity(aspect), other.GetAffinity(aspect));
+                    combined.SetAffinity(aspect, combinedVal);
+                }
+            }
+
+            return combined;
+        }
+
+        public int GetSimilarityTo(AffinityMap other)
+        {
+            int total = 0;
+            foreach (var aspect in _affinities.Keys)
+            {
+                int otherAffinity = other.GetAffinity(aspect);
+                if (otherAffinity != 0)
+                {
+                    total += (GetAffinity(aspect) * other.GetAffinity(aspect)) / MaxAffinity;
+                }
+            }
+
+            return total;
+        }
+
+        public override string ToString()
+        {
+            StringBuilder sb = new StringBuilder();
+            foreach (var affinity in _affinities)
+            {
+                sb.Append(affinity.Key);
+                sb.Append(" : ");
+                sb.Append(affinity.Value);
+                sb.Append('\n');
+            }
+
+            return sb.ToString();
+        }
     }
 }

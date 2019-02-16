@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+    <base_race>
+        <name_plr>humans</name_plr>
+        <name_sng>human</name_sng>
+        <name_adj>human</name_adj>
+        <wildcard affinity="5">geography</wildcard>
+    </base_race>
+    <base_race>
+        <name_plr>dwarves</name_plr>
+        <name_sng>dwarf</name_sng>
+        <name_adj>dwarven</name_adj>
+        <aspect affinity="5">short</aspect>
+        <aspect affinity="4">stocky</aspect>
+        <aspect affinity="3">bearded</aspect>
+        <aspect affinity="3">mountain</aspect>
+        <aspect affinity="3">underground</aspect>
+        <aspect affinity="2">earth</aspect>
+    </base_race>
+</root>

@@ -27,6 +27,8 @@ namespace WorldGen
 
         private HexMap hexMap;
 
+        private WorldGenerator _worldGen;
+
         public MainWindow()
         {
             DataContext = this;
@@ -44,8 +46,8 @@ namespace WorldGen
         private void GenerateNewWorld(int width, int height)
         {
             hexMap = new HexMap(width, height);
-            WorldGenerator wGen = new WorldGenerator(hexMap);
-            wGen.Generate();
+            _worldGen = new WorldGenerator(hexMap);
+            _worldGen.Generate();
         }
 
         private void DrawHexMap(HexMap map, Func<Coords, Color> colorMethod, Double scale = DEFAULT_SCALE)
@@ -246,6 +248,11 @@ namespace WorldGen
         private void BiomeViewClick(object sender, RoutedEventArgs e)
         {
             RecolorHexMap(hexMap.BiomeColorAt);
+        }
+
+        private void RaceGenClick(object sender, RoutedEventArgs e)
+        {
+            _worldGen.GenerateRace();
         }
     }
 }
