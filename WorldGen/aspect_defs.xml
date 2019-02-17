@@ -8,8 +8,8 @@
     <aspect_def>earth</aspect_def>
     <aspect_def>fire</aspect_def>
     <aspect_def>forest</aspect_def>
+    <aspect_def>freshwater</aspect_def>
     <aspect_def>grassland</aspect_def>
-    <aspect_def>hill</aspect_def>
     <aspect_def>hot</aspect_def>
     <aspect_def>humid</aspect_def>
     <aspect_def>jungle</aspect_def>
@@ -54,6 +54,7 @@
         <aspect>woodland</aspect>
         <aspect>mountain</aspect>
         <aspect>underground</aspect>
+        <aspect>freshwater</aspect>
     </pool>
     
     <pool name="elements">

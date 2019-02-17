@@ -49,8 +49,16 @@ namespace WorldGen
             }
         }
 
+        public bool IsEmpty()
+        {
+            return (_prototypes.Count == 0);
+        }
+
         public Race GenerateRace(AffinityMap massAffinity)
         {
+            if (_prototypes.Count == 0)
+                return null;
+
             var races = new List<Race>();
             var raceTable = new RandomTable<Race>();
             foreach (var prototype in _prototypes.Values)
@@ -62,6 +70,7 @@ namespace WorldGen
             }
 
             Race rolledRace = raceTable.Roll();
+            _prototypes.Remove(rolledRace.RaceName.Plural);
             return rolledRace;
         }
     }

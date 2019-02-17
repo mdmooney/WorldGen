@@ -179,7 +179,7 @@ namespace WorldGen
                 int otherAffinity = other.GetAffinity(aspect);
                 if (otherAffinity != 0)
                 {
-                    total += (GetAffinity(aspect) * other.GetAffinity(aspect)) / MaxAffinity;
+                    total += (GetAffinity(aspect) * other.GetAffinity(aspect)) / 2;
                 }
             }
 

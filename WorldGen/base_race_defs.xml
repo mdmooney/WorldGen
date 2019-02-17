@@ -4,7 +4,8 @@
         <name_plr>humans</name_plr>
         <name_sng>human</name_sng>
         <name_adj>human</name_adj>
-        <wildcard affinity="5">geography</wildcard>
+        <wildcard affinity="3">geography</wildcard>
+        <aspect affinity="5">freshwater</aspect>
     </base_race>
     <base_race>
         <name_plr>dwarves</name_plr>
@@ -16,5 +17,20 @@
         <aspect affinity="3">mountain</aspect>
         <aspect affinity="3">underground</aspect>
         <aspect affinity="2">earth</aspect>
+    </base_race>
+    <base_race>
+        <name_plr>elves</name_plr>
+        <name_sng>elf</name_sng>
+        <name_adj>elven</name_adj>
+        <aspect affinity="3">forest</aspect>
+        <aspect affinity="-5">bearded</aspect>
+        <aspect affinity="-2">mountain</aspect>
+    </base_race>
+    <base_race>
+        <name_plr>orcs</name_plr>
+        <name_sng>orc</name_sng>
+        <name_adj>orcish</name_adj>
+        <wildcard affinity="4">geography</wildcard>
+        <aspect affinity="4">freshwater</aspect>
     </base_race>
 </root>

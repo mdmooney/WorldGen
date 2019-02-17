@@ -25,7 +25,7 @@ namespace WorldGen
         private static readonly int MaxX = 80;
         private static readonly int MaxY = 50;
 
-        private HexMap hexMap;
+        private World _world;
 
         private WorldGenerator _worldGen;
 
@@ -40,13 +40,13 @@ namespace WorldGen
             
             InitializeComponent();
 
-            DrawHexMap(hexMap, hexMap.BaseColorAt);
+            DrawHexMap(_world.Map, _world.Map.BaseColorAt);
         }
 
         private void GenerateNewWorld(int width, int height)
         {
-            hexMap = new HexMap(width, height);
-            _worldGen = new WorldGenerator(hexMap);
+            _world = new World(width, height);
+            _worldGen = new WorldGenerator(_world);
             _worldGen.Generate();
         }
 
@@ -220,34 +220,39 @@ namespace WorldGen
 
         private void LandmassViewClick(object sender, RoutedEventArgs e)
         {
-            RecolorHexMap(hexMap.BaseColorAt);
+            RecolorHexMap(_world.Map.BaseColorAt);
         }
 
         private void HeightViewClick(object sender, RoutedEventArgs e)
         {
-            RecolorHexMap(hexMap.ElevationColorAt);
+            RecolorHexMap(_world.Map.ElevationColorAt);
         }
 
         private void NewWorldClick(object sender, RoutedEventArgs e)
         {
             MapHexagons.Clear();
             GenerateNewWorld(MaxX, MaxY);
-            DrawHexMap(hexMap, hexMap.BaseColorAt);
+            DrawHexMap(_world.Map, _world.Map.BaseColorAt);
         }
 
         private void TemperatureViewClick(object sender, RoutedEventArgs e)
         {
-            RecolorHexMap(hexMap.TemperatureColorAt);
+            RecolorHexMap(_world.Map.TemperatureColorAt);
         }
 
         private void HumidityViewClick(object sender, RoutedEventArgs e)
         {
-            RecolorHexMap(hexMap.HumidityColorAt);
+            RecolorHexMap(_world.Map.HumidityColorAt);
         }
 
         private void BiomeViewClick(object sender, RoutedEventArgs e)
         {
-            RecolorHexMap(hexMap.BiomeColorAt);
+            RecolorHexMap(_world.Map.BiomeColorAt);
+        }
+
+        private void PopViewClick(object sender, RoutedEventArgs e)
+        {
+            RecolorHexMap(_world.PopColorAt);
         }
 
         private void RaceGenClick(object sender, RoutedEventArgs e)

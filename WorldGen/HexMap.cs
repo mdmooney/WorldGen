@@ -685,6 +685,13 @@ namespace WorldGen
             return landmass.Affinities;
         }
 
+        public AffinityMap GetAffinitiesForCoords(Coords coords)
+        {
+            if (coords.invalid) return null;
+            Hex hex = GetHexAt(coords);
+            return hex.Affinities;
+        }
+
         public Landmass GetRandomLandmass()
         {
             int r = _rand.Next(Landmasses.Count);

@@ -11,6 +11,7 @@ namespace WorldGen
         private AffinityMap _affinities;
         private Stack<Tuple<string, int>> _wildcards;
         private Name _name;
+        public Name RaceName { get { return _name; } }
 
 
         public RacePrototype(Name name)

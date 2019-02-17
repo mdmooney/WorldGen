@@ -16,8 +16,7 @@ namespace WorldGen
      */
     partial class WorldGenerator
     {
-
-        private HexMap map;
+        private World _world;
 
         private Random rnd;
 
@@ -55,11 +54,11 @@ namespace WorldGen
          * </summary>
          * <param name="map">HexMap to generate a world in.</param>
          */
-        public WorldGenerator(HexMap map)
+        public WorldGenerator(World world)
         {
             rnd = new Random();
-            this.map = map;
-            int worldTotal = (map.Width * map.Height);
+            _world = world;
+            int worldTotal = (_world.Map.Width * _world.Map.Height);
             double overallTotalDec = (double)worldTotal;
             int totalLandHexes = (int)(overallTotalDec * WORLD_RATIO);
             int remainingHexes = totalLandHexes;
@@ -85,7 +84,7 @@ namespace WorldGen
                 landmasses.Add(landmass);
             }
 
-            this.map.Landmasses = landmasses;
+            _world.Map.Landmasses = landmasses;
         }
 
         /**
@@ -99,23 +98,23 @@ namespace WorldGen
         public void Generate()
         {
             List<Task> taskList = new List<Task>();
-            for (int i = 0; i < map.Landmasses.Count; i++)
+            for (int i = 0; i < _world.Map.Landmasses.Count; i++)
             {
-                Landmass mass = map.Landmasses[i];
-                List<Coords> allCoords = map.GetAllCoords();
-                LandmassExpander lEx = new LandmassExpander(map);
+                Landmass mass = _world.Map.Landmasses[i];
+                List<Coords> allCoords = _world.Map.GetAllCoords();
+                LandmassExpander lEx = new LandmassExpander(_world.Map);
                 mass.Hexes = lEx.Expand(allCoords, mass.TotalHexes);
                 mass.TotalHexes = mass.Hexes.Count;
 
                 // Create shore/shallow water hexes adjacent to each hex of this landmass
                 foreach (Coords owned in mass.Hexes)
                 {
-                    if (map.BordersOcean(owned))
+                    if (_world.Map.BordersOcean(owned))
                     {
-                        List<Coords> shoreHexes = map.GetAdjacentOceanHexes(owned);
+                        List<Coords> shoreHexes = _world.Map.GetAdjacentOceanHexes(owned);
                         foreach (Coords shoreCoords in shoreHexes)
                         {
-                            map.SetTypeAt(shoreCoords, Hex.HexType.Shore);
+                            _world.Map.SetTypeAt(shoreCoords, Hex.HexType.Shore);
                             mass.ShoreHexes.Add(shoreCoords);
                         }
                     }
@@ -133,7 +132,7 @@ namespace WorldGen
             // elements in the enum works best
             int passes = rnd.Next(1, 5);
             List<Coords> eleHexes = new List<Coords>(mass.Hexes);
-            HeightExpander hEx = new HeightExpander(map);
+            HeightExpander hEx = new HeightExpander(_world.Map);
             LayeredExpansion layered = new LayeredExpansion(hEx, eleHexes, 0.6, 0.8);
             layered.Expand(passes);
 
@@ -144,7 +143,7 @@ namespace WorldGen
             {
                 double fraction = rnd.NextDouble();
                 int riverHexesThisRound = (int)(totalRiverHexes * fraction);
-                RiverExpander rEx = new RiverExpander(map);
+                RiverExpander rEx = new RiverExpander(_world.Map);
                 List<Coords> landAndShore = mass.Hexes.Union(mass.ShoreHexes).ToList();
                 List<Coords> riverHexes = rEx.Expand(landAndShore, totalRiverHexes);
                 totalRiverHexes -= riverHexes.Count;
@@ -156,7 +155,7 @@ namespace WorldGen
             // Humidity
             passes = rnd.Next(1, 5);
             List<Coords> humiHexes = new List<Coords>(mass.Hexes);
-            HumidityExpander humEx = new HumidityExpander(map);
+            HumidityExpander humEx = new HumidityExpander(_world.Map);
             layered = new LayeredExpansion(humEx, humiHexes, 0.6, 0.8);
             layered.Expand(passes);
 
@@ -174,7 +173,7 @@ namespace WorldGen
                     expandThisRound = (int)(expandThisRound * fraction);
                 }
 
-                bioEx = new BiomeExpander(map);
+                bioEx = new BiomeExpander(_world.Map);
                 var placedCoords = bioEx.Expand(bioHexes, expandThisRound);
                 bioHexes.RemoveAll(x => placedCoords.Contains(x));
             }
@@ -206,13 +205,13 @@ namespace WorldGen
         public void SetTemperatures(int adjust = 0)
         {
             // first locate the equator
-            int equatorRow = map.Height / 2;
+            int equatorRow = _world.Map.Height / 2;
 
             // get gradient step
             int gradStep = (DefaultEquatorTemp - DefaultPoleTemp) / (equatorRow);
             bool stepFlipped = false;
 
-            for (int y = 0, currTemp = DefaultPoleTemp; y < map.Height; y++)
+            for (int y = 0, currTemp = DefaultPoleTemp; y < _world.Map.Height; y++)
             {
                 // flip the temperature gradient after we hit the equator
                 if (!stepFlipped
@@ -223,23 +222,23 @@ namespace WorldGen
                 }
 
                 // set temperature of all hexes according to thresholds
-                for (int x = 0; x < map.Width; x++)
+                for (int x = 0; x < _world.Map.Width; x++)
                 {
                     Coords here = new Coords(x, y);
-                    Hex.ElevationLevel el = map.GetElevationAt(here);
+                    Hex.ElevationLevel el = _world.Map.GetElevationAt(here);
                     int heightAdjust = (int)el * TempHeightAdjust;
                     int hexTemp = currTemp + adjust + heightAdjust;
 
                     if (hexTemp > TempThreshHot)
-                        map.SetTemperatureAt(new Coords(x, y), Hex.TemperatureLevel.Hot);
+                        _world.Map.SetTemperatureAt(new Coords(x, y), Hex.TemperatureLevel.Hot);
                     else if (hexTemp > TempThreshWarm)
-                        map.SetTemperatureAt(new Coords(x, y), Hex.TemperatureLevel.Warm);
+                        _world.Map.SetTemperatureAt(new Coords(x, y), Hex.TemperatureLevel.Warm);
                     else if (hexTemp < TempThreshCold)
-                        map.SetTemperatureAt(new Coords(x, y), Hex.TemperatureLevel.Cold);
+                        _world.Map.SetTemperatureAt(new Coords(x, y), Hex.TemperatureLevel.Cold);
                     else if (hexTemp < TempThreshCool)
-                        map.SetTemperatureAt(new Coords(x, y), Hex.TemperatureLevel.Cool);
+                        _world.Map.SetTemperatureAt(new Coords(x, y), Hex.TemperatureLevel.Cool);
                     else
-                        map.SetTemperatureAt(new Coords(x, y), Hex.TemperatureLevel.Temperate);
+                        _world.Map.SetTemperatureAt(new Coords(x, y), Hex.TemperatureLevel.Temperate);
                 }
 
                 currTemp += gradStep;
@@ -251,12 +250,45 @@ namespace WorldGen
             if (_raceGen == null)
                 _raceGen = new RaceGen();
 
-            Landmass mass = map.GetRandomLandmass();
-            AffinityMap massAffinity = map.GetAffinitiesForLandmass(mass);
+            if (_raceGen.IsEmpty())
+                return;
+
+            Landmass mass = _world.Map.GetRandomLandmass();
+            AffinityMap massAffinity = _world.Map.GetAffinitiesForLandmass(mass);
             Race genRace = _raceGen.GenerateRace(massAffinity);
             Console.WriteLine("Rolled race: " + genRace);
             Console.WriteLine(genRace.Affinities);
+            
+            // arbitrarily low number to start with
+            int highest = -50;
+            // random coordinates as default
+            Coords candidate = mass.RandomCoords();
+            int tick = 0;
+            int tenPercent = mass.Count / 10;
+            bool tenPercentMore = false;
+            foreach (Coords coords in mass.CoordsFromRandomPoint())
+            {
+                if (tick >= tenPercent)
+                    break;
+                AffinityMap hexAffinities = _world.Map.GetAffinitiesForCoords(coords);
+                int sim = genRace.Affinities.GetSimilarityTo(hexAffinities);
+                if (sim > highest)
+                {
+                    highest = sim;
+                    candidate = coords;
+                }
+                if (!tenPercentMore && highest > 0)
+                    tenPercentMore = true;
+                if (tenPercentMore)
+                {
+                    tick++;
+                }
+            }
+            Console.WriteLine("Placing at : " + candidate);
+            Console.WriteLine(_world.Map.GetAffinitiesForCoords(candidate));
+            Console.WriteLine("--> Final Score: " + highest);
             Console.WriteLine("------------------");
+            _world.PlaceRaceAt(genRace, candidate);
         }
     }
 }

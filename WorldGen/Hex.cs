@@ -174,9 +174,11 @@ namespace WorldGen
                     switch (Elevation)
                     {
                         case ElevationLevel.Mid:
-                            _affinities.MaximizeAffinity("hill");
+                            _affinities.SetAffinity("mountain", 1);
                             break;
                         case ElevationLevel.MidHigh:
+                            _affinities.SetAffinity("mountain", 3);
+                            break;
                         case ElevationLevel.High:
                             _affinities.MaximizeAffinity("mountain");
                             break;

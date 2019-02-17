@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System;
 
 namespace WorldGen
 {
@@ -14,6 +15,9 @@ namespace WorldGen
         public List<Coords> Hexes = new List<Coords>();
         public List<Coords> ShoreHexes = new List<Coords>();
         private AffinityMap _affinities;
+        private static Random _rand = new Random();
+        public int Count { get { return Hexes.Count; } }
+
         public AffinityMap Affinities
         {
             get
@@ -25,6 +29,26 @@ namespace WorldGen
             set
             {
                 _affinities = value;
+            }
+        }
+
+        public Coords RandomCoords()
+        {
+            return new Coords(Hexes[_rand.Next(Hexes.Count)]);
+        }
+
+        public System.Collections.IEnumerable CoordsFromRandomPoint()
+        {
+            int r = _rand.Next(Hexes.Count);
+            int i = r + 1;
+
+            while (i != r)
+            {
+                if (i >= Hexes.Count)
+                    i = 0;
+
+                yield return new Coords(Hexes[i]);
+                i++;
             }
         }
     }
