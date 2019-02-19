@@ -30,7 +30,7 @@
             </Grid.ColumnDefinitions>
             <ScrollViewer Grid.Row="0" Grid.Column="0" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
                 <Grid x:Name="InnerGrid">
-                    <ItemsControl ItemsSource="{Binding MapHexagons}">
+                    <ItemsControl ItemsSource="{Binding MapObjects}">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
                                 <Grid/>
@@ -42,11 +42,24 @@
                                 <Setter Property="Canvas.Top" Value="0"/>
                             </Style>
                         </ItemsControl.ItemContainerStyle>
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
+                        <ItemsControl.Resources>
+                            <DataTemplate DataType="{x:Type local:MapHexagon}">
                                 <Polygon Points="{Binding Points}" Fill="{Binding HexColor}" Stroke="Black" StrokeThickness="0.5"/>
                             </DataTemplate>
-                        </ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="{x:Type local:MapRiver}">
+                                <Path Stroke="Blue" StrokeThickness="1">
+                                    <Path.Data>
+                                        <PathGeometry>
+                                            <PathGeometry.Figures>
+                                                <PathFigure StartPoint="{Binding StartPoint}" IsClosed="False">
+                                                    <PolyLineSegment Points="{Binding Points}"/>
+                                                </PathFigure>
+                                            </PathGeometry.Figures>
+                                        </PathGeometry>
+                                    </Path.Data>
+                                </Path>
+                            </DataTemplate>
+                        </ItemsControl.Resources>
                     </ItemsControl>
                 </Grid>
             </ScrollViewer>

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows;
+using System.Windows.Data;
 using System.Windows.Media;
 using System.Windows.Shapes;
 
@@ -16,6 +17,8 @@ namespace WorldGen
         // Some small memory overhead for this, but it allows certain
         // operations like recoloring to be much more efficient
         public ObservableCollection<MapHexagon> MapHexagons { get; set; }
+        public ObservableCollection<MapRiver> MapRivers { get; set; }
+        public CompositeCollection MapObjects { get; set; }
 
         private const double DEFAULT_SCALE = 10.0;
 
@@ -33,7 +36,11 @@ namespace WorldGen
         {
             DataContext = this;
 
+            MapObjects = new CompositeCollection();
             MapHexagons = new ObservableCollection<MapHexagon>();
+            MapRivers = new ObservableCollection<MapRiver>();
+            MapObjects.Add(new CollectionContainer() { Collection = MapHexagons });
+            MapObjects.Add(new CollectionContainer() { Collection = MapRivers });
 
             GenerateNewWorld(MaxX, MaxY);
             Scale = DEFAULT_SCALE;
@@ -133,40 +140,27 @@ namespace WorldGen
             Point offset = GetHexagonOffsets();
 
             Point center = new Point(oriX + offset.X, oriY + offset.Y);
+            MapRiver mr = new MapRiver();
 
             // draw entry line
             if (entry != null)
             {
                 Hex.Side entrySide = (Hex.Side)entry;
                 Point entryPoint = GetCoordsOfSideMidpoint(oriX, oriY, entrySide, scale);
-                Line entryLine = new Line()
-                {
-                    Stroke = System.Windows.Media.Brushes.Blue,
-                    StrokeThickness = 1,
-                    X1 = center.X,
-                    Y1 = center.Y,
-                    X2 = entryPoint.X,
-                    Y2 = entryPoint.Y
-                };
-                //InnerGrid.Children.Add(entryLine);
+                mr.Points.Add(entryPoint);
             }
+
+            mr.Points.Add(center);
 
             // draw exit line, if there is one
             if (exit != null)
             {
                 Hex.Side exitSide = (Hex.Side)exit;
                 Point exitPoint = GetCoordsOfSideMidpoint(oriX, oriY, exitSide, scale);
-                Line exitLine  = new Line()
-                {
-                    Stroke = System.Windows.Media.Brushes.Blue,
-                    StrokeThickness = 1,
-                    X1 = center.X,
-                    Y1 = center.Y,
-                    X2 = exitPoint.X,
-                    Y2 = exitPoint.Y
-                };
-                //InnerGrid.Children.Add(exitLine);
+                mr.Points.Add(exitPoint);
             }
+
+            MapRivers.Add(mr);
         }
 
         // Helper method to get the coordinates of the middle of a given side from origin coords
@@ -231,6 +225,7 @@ namespace WorldGen
         private void NewWorldClick(object sender, RoutedEventArgs e)
         {
             MapHexagons.Clear();
+            MapRivers.Clear();
             GenerateNewWorld(MaxX, MaxY);
             DrawHexMap(_world.Map, _world.Map.BaseColorAt);
         }

@@ -69,6 +69,7 @@
     <Compile Include="LayeredExpander.cs" />
     <Compile Include="LayeredExpansion.cs" />
     <Compile Include="MapHexagon.cs" />
+    <Compile Include="MapRiver.cs" />
     <Compile Include="Name.cs" />
     <Compile Include="NameGenerator.cs" />
     <Compile Include="Race.cs" />
