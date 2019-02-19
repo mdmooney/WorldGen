@@ -17,6 +17,7 @@
         <aspect affinity="3">mountain</aspect>
         <aspect affinity="3">underground</aspect>
         <aspect affinity="2">earth</aspect>
+        <aspect affinity="2">freshwater</aspect>
     </base_race>
     <base_race>
         <name_plr>elves</name_plr>

@@ -209,6 +209,9 @@ namespace WorldGen
                         default:
                             break;
                     }
+
+                    if (HasRiver())
+                        _affinities.MaximizeAffinity("freshwater");
                 }
                 return _affinities;
             }

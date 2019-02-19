@@ -66,7 +66,6 @@ namespace WorldGen
             if (val > MaxAffinity) boundedVal = MaxAffinity;
             else if (val < MinAffinity) boundedVal = MinAffinity;
 
-            // TODO: confirm that this is a real aspect, as listed in the glossary
             // TODO: handle opposed and related aspects, etc.
 
             _affinities[aspect] = boundedVal;
