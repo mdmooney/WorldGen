@@ -44,6 +44,11 @@
         /// </summary>
         public River ParentRiver { get; private set; }
 
+        /// <summary>
+        /// Coordinates of this river segment.
+        /// </summary>
+        public Coords Location { get; set; }
+
         /**
         * <summary>
         * Sole constructor for a RiverSegment just takes a River to make this

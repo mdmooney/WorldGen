@@ -139,14 +139,16 @@ namespace WorldGen
             // Rivers
             passes = rnd.Next(1, 20);
             int totalRiverHexes = mass.TotalHexes / 20;
+            List<Coords> landAndShore = mass.Hexes.Union(mass.ShoreHexes).ToList();
             for (int pass = 1; pass <= passes; pass++)
             {
-                double fraction = rnd.NextDouble();
-                int riverHexesThisRound = (int)(totalRiverHexes * fraction);
                 RiverExpander rEx = new RiverExpander(_world.Map);
-                List<Coords> landAndShore = mass.Hexes.Union(mass.ShoreHexes).ToList();
                 List<Coords> riverHexes = rEx.Expand(landAndShore, totalRiverHexes);
-                totalRiverHexes -= riverHexes.Count;
+                if (rEx.ExpandedRiver.Count > 1)
+                {
+                    _world.Rivers.Add(rEx.ExpandedRiver);
+                    totalRiverHexes -= riverHexes.Count;
+                }
             }
 
             // Temperature

@@ -15,7 +15,8 @@ namespace WorldGen
     {
         private RiverSegment _lastSegment;
         private Coords _lastSegmentCoords;
-        private River _currentRiver;
+
+        public River ExpandedRiver { get; private set; }
 
         // No re-expansion; rivers are linear
         public override bool AllowsReexpansion { get { return false; } }
@@ -29,7 +30,7 @@ namespace WorldGen
          */
         public RiverExpander(HexMap map) : base(map)
         {
-            _currentRiver = new River();
+            ExpandedRiver = new River();
         }
 
         /**
@@ -87,7 +88,7 @@ namespace WorldGen
             // Rivers can't double back on themselves
             var existingSegment = _map.GetMainRiverSegmentAt(coords);
             if ((existingSegment != null)
-                && (existingSegment.ParentRiver == _currentRiver))
+                && (existingSegment.ParentRiver == ExpandedRiver))
             {
                 return false;
             }
@@ -132,7 +133,7 @@ namespace WorldGen
             }
             else
             {
-                RiverSegment newSeg = new RiverSegment(_currentRiver);
+                RiverSegment newSeg = new RiverSegment(ExpandedRiver);
 
                 // Adding the river to land
                 if (_map.AddMainRiverAt(coords, newSeg))
@@ -140,7 +141,7 @@ namespace WorldGen
                     if (_lastSegment == null)
                     {
                         // this is the first segment in the river
-                        _currentRiver.FirstSeg = newSeg;
+                        ExpandedRiver.FirstSeg = newSeg;
                     }
                     else
                     {
@@ -154,7 +155,8 @@ namespace WorldGen
                         _lastSegment.ExitSide = lastExitSide;
                         newSeg.EntrySide = newEntrySide;
                     }
-                    _currentRiver.LastSeg = newSeg;
+                    newSeg.Location = coords;
+                    ExpandedRiver.LastSeg = newSeg;
 
                     _lastSegment = newSeg;
                     _lastSegmentCoords = coords;

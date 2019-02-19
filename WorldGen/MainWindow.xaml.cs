@@ -80,10 +80,43 @@ namespace WorldGen
                         RiverSegment seg = map.GetMainRiverSegmentAt(currCoords);
                         Hex.Side? entry = seg.EntrySide;
                         Hex.Side? exit = seg.ExitSide;
-                        DrawRiver(x, y, entry, exit, scale);
+                        //DrawRiver(x, y, entry, exit, scale);
+                        DrawRivers();
                     }
                 }
             }
+        }
+
+        public Point PointFromCoords(Coords coords)
+        {
+            Point offset = GetHexagonOffsets();
+            double x = coords.x;
+            double y = coords.y;
+            x++;
+            y++;
+
+            x *= (Scale + offset.X);
+            y *= (offset.Y * 2);
+            y += (coords.x % 2 != 0) ? offset.Y : 0.0;
+
+            return new Point(x, y);
+        }
+
+        public Point CenterPointFromCoords(Coords coords)
+        {
+            Point offset = GetHexagonOffsets();
+            double x = coords.x;
+            double y = coords.y;
+            x++;
+            y++;
+
+            x *= (Scale + offset.X);
+            x += offset.X;
+            y *= (offset.Y * 2);
+            y += offset.Y;
+            y += (coords.x % 2 != 0) ? offset.Y : 0.0;
+
+            return new Point(x, y);
         }
 
         private Point GetHexagonOffsets()
@@ -135,32 +168,48 @@ namespace WorldGen
             return mapHex;
         }
 
-        private void DrawRiver(Double oriX, Double oriY, Hex.Side? entry, Hex.Side? exit, Double scale = DEFAULT_SCALE)
+        private void DrawRivers(Double scale = DEFAULT_SCALE)
         {
-            Point offset = GetHexagonOffsets();
-
-            Point center = new Point(oriX + offset.X, oriY + offset.Y);
-            MapRiver mr = new MapRiver();
-
-            // draw entry line
-            if (entry != null)
+            foreach (var river in _world.Rivers)
             {
-                Hex.Side entrySide = (Hex.Side)entry;
-                Point entryPoint = GetCoordsOfSideMidpoint(oriX, oriY, entrySide, scale);
-                mr.Points.Add(entryPoint);
+                RiverSegment seg = river.FirstSeg;
+                MapRiver mr = new MapRiver();
+
+                mr.Points.Add(CenterPointFromCoords(seg.Location));
+
+                while ((seg.NextSegment != null))
+                {
+                    if (CoordsWrap(seg.Location, seg.NextSegment.Location))
+                    {
+                        Point loc = PointFromCoords(seg.Location);
+                        Point exitPoint = GetCoordsOfSideMidpoint(loc.X, loc.Y, (Hex.Side)seg.ExitSide);
+                        mr.Points.Add(exitPoint);
+                        MapRivers.Add(mr);
+                        mr = new MapRiver();
+                        loc = PointFromCoords(seg.NextSegment.Location);
+                        Point entryPoint = GetCoordsOfSideMidpoint(loc.X, loc.Y, (Hex.Side)seg.EntrySide);
+                        mr.Points.Add(entryPoint);
+                    }
+                    seg = seg.NextSegment;
+                    mr.Points.Add(CenterPointFromCoords(seg.Location));
+                }
+
+                if (river.LastSeg.ExitSide != null)
+                {
+                    Hex.Side exitSide = (Hex.Side)river.LastSeg.ExitSide;
+                    Point loc = PointFromCoords(river.LastSeg.Location);
+                    Point sideMidpoint = GetCoordsOfSideMidpoint(loc.X, loc.Y, exitSide);
+                    mr.Points.Add(sideMidpoint);
+                }
+
+                MapRivers.Add(mr);
             }
+        }
 
-            mr.Points.Add(center);
-
-            // draw exit line, if there is one
-            if (exit != null)
-            {
-                Hex.Side exitSide = (Hex.Side)exit;
-                Point exitPoint = GetCoordsOfSideMidpoint(oriX, oriY, exitSide, scale);
-                mr.Points.Add(exitPoint);
-            }
-
-            MapRivers.Add(mr);
+        public bool CoordsWrap(Coords a, Coords b)
+        {
+            return ((a.x == (_world.Width - 1) && b.x == 0)
+                    || (b.x == (_world.Width - 1) && a.x == 0));
         }
 
         // Helper method to get the coordinates of the middle of a given side from origin coords

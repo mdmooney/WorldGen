@@ -10,17 +10,19 @@ namespace WorldGen
     class World
     {
         public HexMap Map { get; }
+        public List<River> Rivers { get; set; }
         private Dictionary<Coords, Demographics> _demographics;
 
-        private int _width;
-        private int _height;
+        public int Width { get; private set; }
+        public int Height { get; private set; }
 
         public World(int width, int height)
         {
-            _width = width;
-            _height = height;
+            Width = width;
+            Height = height;
             Map = new HexMap(width, height);
             _demographics = new Dictionary<Coords, Demographics>();
+            Rivers = new List<River>();
         }
 
         public Demographics DemographicsAt(Coords coords)

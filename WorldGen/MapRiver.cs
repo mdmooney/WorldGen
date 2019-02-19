@@ -11,7 +11,14 @@ namespace WorldGen
     public class MapRiver
     {
         public PointCollection Points { get; set; }
-        public Point StartPoint { get { return Points.First(); } }
+        public Point? StartPoint {
+            get
+            {
+                if (Points.Count > 0)
+                    return Points.First();
+                return null;
+            }
+        }
 
         public MapRiver()
         {
