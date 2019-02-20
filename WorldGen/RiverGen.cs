@@ -100,7 +100,6 @@ namespace WorldGen
         {
             // iterate through the river and actually place the river segments where they belong
             RiverSegment seg = _river.FirstSeg;
-
             do
             {
                 _world.Map.AddMainRiverAt(seg.Location, seg);

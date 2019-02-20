@@ -27,27 +27,18 @@
         /// </summary>
         public RiverSegment LastSeg { get; set; }
 
-        private int _count = -1;
+        private int _count = 0;
         public int Count
         {
             get
             {
-                // Only count when requested, and only do it once; rivers are not
-                // expected to change after creation
-                if (_count < 0)
+                if (FirstSeg != null)
                 {
-                    if (FirstSeg == null)
+                    RiverSegment seg = FirstSeg;
+                    while ((seg.NextSegment != null))
                     {
-                        _count = 0;
-                    }
-                    else
-                    {
-                        RiverSegment seg = FirstSeg;
-                        while ((seg.NextSegment != null))
-                        {
-                            _count++;
-                            seg = seg.NextSegment;
-                        }
+                        _count++;
+                        seg = seg.NextSegment;
                     }
                 }
                 return _count;

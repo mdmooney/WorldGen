@@ -164,7 +164,7 @@ namespace WorldGen
                 {
                     if (HexBiome != null)
                     {
-                        _affinities = HexBiome.Affinities;
+                        _affinities = new AffinityMap(HexBiome.Affinities);
                     }
                     else
                     {
@@ -211,7 +211,9 @@ namespace WorldGen
                     }
 
                     if (HasRiver())
+                    {
                         _affinities.MaximizeAffinity("freshwater");
+                    }
                 }
                 return _affinities;
             }

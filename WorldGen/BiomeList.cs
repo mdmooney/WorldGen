@@ -57,8 +57,13 @@ namespace WorldGen
                 for (int i = 0; i < numChars; i += 2)
                     colorBytes[i / 2] = Convert.ToByte(biomeColorStr.Substring(i, 2), 16);
 
-                Color biomeColor = Color.FromArgb(0xff, colorBytes[0], colorBytes[1], colorBytes[2]); 
-                Biome newBiome = new Biome(biomeName, biomeColor);
+                Color biomeColor = Color.FromArgb(0xff, colorBytes[0], colorBytes[1], colorBytes[2]);
+                AffinityMap biomeAffinities = new AffinityMap();
+
+                string primaryAspect = node.Element("primary_aspect").Value;
+                biomeAffinities.MaximizeAffinity(primaryAspect);
+
+                Biome newBiome = new Biome(biomeName, biomeColor, biomeAffinities);
                 
                 int temperatureLowerBound = Math.Max(int.Parse(node.Element("temperature_lb").Value), 0);
                 int temperatureUpperBound = Math.Min(int.Parse(node.Element("temperature_ub").Value), temperatureMax);
@@ -73,9 +78,6 @@ namespace WorldGen
                 {
                     newBiome.AddHumidity((Hex.HumidityLevel)i);
                 }
-
-                string primaryAspect = node.Element("primary_aspect").Value;
-                newBiome.Affinities.MaximizeAffinity(primaryAspect);
 
                 Biomes.Add(newBiome);
             }

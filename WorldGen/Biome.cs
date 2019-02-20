@@ -17,8 +17,10 @@ namespace WorldGen
         private AffinityMap _affinities;
         public AffinityMap Affinities
         {
-            // return a copy of affinity map when requested; biome affinities do not change
-            get { return _affinities;  }
+            get
+            {
+                return _affinities;
+            }
             private set { _affinities = value; }
         }
 
@@ -34,6 +36,11 @@ namespace WorldGen
         public Biome(string name, Color color) : this(name)
         {
             BiomeColor = color;
+        }
+
+        public Biome(string name, Color color, AffinityMap affinities) : this(name, color)
+        {
+            _affinities = affinities;
         }
 
         public void AddTemperature(Hex.TemperatureLevel temperature)
