@@ -75,5 +75,27 @@
         {
             Name = name;
         }
+
+        public void Extend(Hex.Side side, Coords coords)
+        {
+            RiverSegment newSeg = new RiverSegment(this, coords);
+            LastSeg.ExitSide = side;
+            newSeg.EntrySide = Hex.OppositeSide(side);
+            newSeg.PrevSegment = LastSeg;
+            LastSeg.NextSegment = newSeg;
+            LastSeg = newSeg;
+        }
+
+        public void Terminate(Hex.Side side)
+        {
+            LastSeg.ExitSide = side;
+        }
+
+        public River(Coords start, string name = "River")
+        {
+            Name = name;
+            RiverSegment seg = new RiverSegment(this, start);
+            FirstSeg = LastSeg = seg;
+        }
     }
 }

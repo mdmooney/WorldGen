@@ -60,5 +60,11 @@
         {
             ParentRiver = river;
         }
+
+        public RiverSegment(River river, Coords loc)
+        {
+            ParentRiver = river;
+            Location = loc;
+        }
     }
 }

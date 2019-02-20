@@ -78,6 +78,7 @@
     <Compile Include="RandomTable.cs" />
     <Compile Include="River.cs" />
     <Compile Include="RiverExpander.cs" />
+    <Compile Include="RiverGen.cs" />
     <Compile Include="RiverSegment.cs" />
     <Compile Include="World.cs" />
     <Compile Include="WorldGen.cs" />

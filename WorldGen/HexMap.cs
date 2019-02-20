@@ -473,6 +473,17 @@ namespace WorldGen
             return adjCoords;
         }
 
+        public Dictionary<Hex.Side, Coords> GetFilteredAdjacency(Coords coords, Predicate<Coords> pred)
+        {
+
+            Dictionary<Hex.Side, Coords> allAdjacent = GetAllAdjacentCoords(coords);
+
+            Dictionary<Hex.Side, Coords> rv
+                = allAdjacent.Where(x => pred(x.Value)).ToDictionary(x => x.Key, x => x.Value);
+
+            return rv;
+        }
+
         /**
          * <summary>
          * Gets a Dictionary of all Coords adjacent to specified Coords on the map

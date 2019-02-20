@@ -137,19 +137,23 @@ namespace WorldGen
             layered.Expand(passes);
 
             // Rivers
-            passes = rnd.Next(1, 20);
             int totalRiverHexes = mass.TotalHexes / 20;
-            List<Coords> landAndShore = mass.Hexes.Union(mass.ShoreHexes).ToList();
-            for (int pass = 1; pass <= passes; pass++)
+            int remainingHexes = totalRiverHexes;
+            while (remainingHexes > 0)
             {
-                RiverExpander rEx = new RiverExpander(_world.Map);
-                List<Coords> riverHexes = rEx.Expand(landAndShore, totalRiverHexes);
-                if (rEx.ExpandedRiver.Count > 1)
+                if (remainingHexes == 1)
+                    break;
+                int riverLength = rnd.Next(2, remainingHexes);
+                RiverGen rgen = new RiverGen(_world, mass, riverLength);
+                int genLength = rgen.Generate();
+                if (genLength > 1)
                 {
-                    _world.Rivers.Add(rEx.ExpandedRiver);
-                    totalRiverHexes -= riverHexes.Count;
+                    remainingHexes -= genLength;
+                    rgen.Commit();
+                    _world.Rivers.Add(rgen.GenRiver);
                 }
             }
+
 
             // Temperature
             SetTemperatures();

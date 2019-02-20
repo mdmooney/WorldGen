@@ -257,14 +257,7 @@ namespace WorldGen
          */
         private Dictionary<Hex.Side, Coords> GetFilteredAdjacency(Coords coords)
         {
-
-            Dictionary<Hex.Side, Coords> allAdjacent = _map.GetAllAdjacentCoords(coords);
-
-            Dictionary<Hex.Side, Coords> rv 
-                = allAdjacent.Where(x => (_validHexes.Contains(x.Value) && CanExpandTo(x.Value)))
-                                                         .ToDictionary(x => x.Key, x => x.Value);
-
-            return rv;
+            return _map.GetFilteredAdjacency(coords, (x => _validHexes.Contains(x) && CanExpandTo(x)));
         }
 
         /** <summary>

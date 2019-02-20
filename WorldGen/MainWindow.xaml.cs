@@ -187,7 +187,7 @@ namespace WorldGen
                         MapRivers.Add(mr);
                         mr = new MapRiver();
                         loc = PointFromCoords(seg.NextSegment.Location);
-                        Point entryPoint = GetCoordsOfSideMidpoint(loc.X, loc.Y, (Hex.Side)seg.EntrySide);
+                        Point entryPoint = GetCoordsOfSideMidpoint(loc.X, loc.Y, (Hex.Side)seg.NextSegment.EntrySide);
                         mr.Points.Add(entryPoint);
                     }
                     seg = seg.NextSegment;
