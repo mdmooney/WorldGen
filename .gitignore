@@ -1,3 +1,6 @@
 WorldGen/obj/*
 WorldGen/bin/*
+WorldGenTests/obj/*
+WorldGenTests/bin/*
+packages/
 .vs/

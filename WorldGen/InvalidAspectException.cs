@@ -2,7 +2,7 @@
 
 namespace WorldGen
 {
-    class InvalidAspectException : Exception
+    public class InvalidAspectException : Exception
     {
         public InvalidAspectException()
         {

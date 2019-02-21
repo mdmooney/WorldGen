@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace WorldGen
 {
-    class AffinityMap
+    public class AffinityMap
     {
         // Bounds for max and min aspect affinities
-        private static readonly int MaxAffinity = 5;
-        private static readonly int MinAffinity = -5;
+        public static readonly int MaxAffinity = 5;
+        public static readonly int MinAffinity = -MaxAffinity;
 
         private Dictionary<string, int> _affinities;
         private AspectGlossary _aspectGlossary = AspectGlossary.GetInstance();
@@ -45,6 +45,12 @@ namespace WorldGen
 
         public int GetAffinity(string aspect)
         {
+            // validate the aspect
+            if (!_aspectGlossary.Contains(aspect))
+            {
+                throw InvalidAspectException.FromAspect(aspect);
+            }
+
             if (_affinities.ContainsKey(aspect))
                 return _affinities[aspect];
 
@@ -80,7 +86,6 @@ namespace WorldGen
         {
             _affinities[aspect] = MinAffinity;
         }
-
 
         public List<string> IntersectAspects(List<string> aspects)
         {
@@ -163,7 +168,10 @@ namespace WorldGen
                 if (otherAffinity != 0)
                 {
                     int combinedVal = CombineAffinities(GetAffinity(aspect), other.GetAffinity(aspect));
-                    combined.SetAffinity(aspect, combinedVal);
+                    if (combinedVal != 0)
+                    {
+                        combined.SetAffinity(aspect, combinedVal);
+                    }
                 }
             }
 
