@@ -13,7 +13,7 @@ namespace WorldGen.Tests
     {
         // Simple setting and getting of affinities
         [TestMethod()]
-        public void Set_Get_Affinity()
+        public void SetGetAffinityTest()
         {
             string testAspect = "fire";
             var am = new AffinityMap();
@@ -40,7 +40,7 @@ namespace WorldGen.Tests
         }
 
         [TestMethod()]
-        public void Min_Max_Affinity()
+        public void MinMaxAffinityTest()
         {
             string testAspect = "fire";
             var am = new AffinityMap();
@@ -67,7 +67,7 @@ namespace WorldGen.Tests
         }
 
         [TestMethod()]
-        public void Intersect_Affinities()
+        public void IntersectAffinitiesTest()
         {
             List<string> aspects = new List<string>() { "earth", "air", "fire" };
             var am = new AffinityMap();
@@ -85,7 +85,7 @@ namespace WorldGen.Tests
         }
 
         [TestMethod()]
-        public void Set_Get_Invalid_Affinity()
+        public void SetGetInvalidAffinityTest()
         {
             string invalidAspect = "this-is-not-a-real-aspect";
             var am = new AffinityMap();
@@ -102,7 +102,7 @@ namespace WorldGen.Tests
         }
 
         [TestMethod()]
-        public void Combine_Affinities()
+        public void CombineAffinitiesTest()
         {
             // Two max affinities => max combined
             int max = AffinityMap.MaxAffinity;
@@ -136,7 +136,7 @@ namespace WorldGen.Tests
         }
 
         [TestMethod()]
-        public void Combine_Maps()
+        public void CombineMapsTest()
         {
             int max = AffinityMap.MaxAffinity;
             int min = AffinityMap.MinAffinity;
@@ -180,7 +180,7 @@ namespace WorldGen.Tests
         }
 
         [TestMethod()]
-        public void Get_Similarity()
+        public void GetSimilarityTest()
         {
             int max = AffinityMap.MaxAffinity;
             int min = AffinityMap.MinAffinity;
@@ -225,7 +225,7 @@ namespace WorldGen.Tests
         }
 
         [TestMethod()]
-        public void To_String()
+        public void ToStringTest()
         {
             // empty map
             AffinityMap am = new AffinityMap();
@@ -254,6 +254,5 @@ namespace WorldGen.Tests
             expected = line1 + '\n' + line2 + '\n' + line3 + '\n';
             Assert.AreEqual(expected, str);
         }
-
     }
 }

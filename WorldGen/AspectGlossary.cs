@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
+[assembly: InternalsVisibleTo("WorldGenTests")]
 namespace WorldGen
 {
     class AspectGlossary
@@ -56,12 +58,14 @@ namespace WorldGen
 
         public bool Contains(string aspect)
         {
-            return _aspects.Contains(aspect);
+            if (aspect == null) return false;
+            return _aspects.Contains(aspect.ToLower());
         }
 
         public bool HasPool(string pool)
         {
-            return _pools.ContainsKey(pool);
+            if (pool == null) return false;
+            return _pools.ContainsKey(pool.ToLower());
         }
 
         public HashSet<string> GetPool(string pool)

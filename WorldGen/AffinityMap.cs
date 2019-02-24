@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
+[assembly: InternalsVisibleTo("WorldGenTests")]
 namespace WorldGen
 {
-    public class AffinityMap
+    class AffinityMap
     {
         // Bounds for max and min aspect affinities
         public static readonly int MaxAffinity = 5;

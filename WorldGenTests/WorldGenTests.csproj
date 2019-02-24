@@ -49,6 +49,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AffinityMapTests.cs" />
+    <Compile Include="AspectGlossaryTests.cs" />
+    <Compile Include="BiomeListTests.cs" />
+    <Compile Include="BiomeTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
