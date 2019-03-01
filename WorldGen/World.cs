@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,6 +16,18 @@ namespace WorldGen
 
         public int Width { get; private set; }
         public int Height { get; private set; }
+
+        private BiomeList _biomes;
+        public BiomeList Biomes {
+            get
+            {
+                if (_biomes == null)
+                {
+                    _biomes = new BiomeList(new FileStream("biome_defs.xml", FileMode.Open, FileAccess.Read, FileShare.Read));
+                }
+                return _biomes;
+            }
+        }
 
         public World(int width, int height)
         {

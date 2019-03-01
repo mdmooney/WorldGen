@@ -11,9 +11,9 @@ namespace WorldGen
         private BiomeList _biomes;
         private Biome _currentBiome;
 
-        public BiomeExpander(HexMap map) : base(map)
+        public BiomeExpander(HexMap map, BiomeList biomes) : base(map)
         {
-            _biomes = BiomeList.GetInstance();
+            _biomes = biomes;
         }
 
         protected override bool CanExpandFirst(Coords coords)

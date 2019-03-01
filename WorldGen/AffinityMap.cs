@@ -81,12 +81,12 @@ namespace WorldGen
 
         public void MaximizeAffinity(string aspect)
         {
-            _affinities[aspect] = MaxAffinity;
+            SetAffinity(aspect, MaxAffinity);
         }
 
         public void MinimizeAffinity(string aspect)
         {
-            _affinities[aspect] = MinAffinity;
+            SetAffinity(aspect, MinAffinity);
         }
 
         public List<string> IntersectAspects(List<string> aspects)

@@ -179,7 +179,7 @@ namespace WorldGen
                     expandThisRound = (int)(expandThisRound * fraction);
                 }
 
-                bioEx = new BiomeExpander(_world.Map);
+                bioEx = new BiomeExpander(_world.Map, _world.Biomes);
                 var placedCoords = bioEx.Expand(bioHexes, expandThisRound);
                 bioHexes.RemoveAll(x => placedCoords.Contains(x));
             }
