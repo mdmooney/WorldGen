@@ -50,7 +50,7 @@ namespace WorldGen
         private static readonly double startConsonantChance = 0.8;
         private static readonly double endConsonantChance = 0.5;
 
-        private Random rand;
+        private RandomGen _rand;
 
         /**
          * <summary>
@@ -59,7 +59,7 @@ namespace WorldGen
          */
         public NameGenerator()
         {
-            rand = new Random();
+            _rand = new RandomGen();
         }
 
         /** <summary>
@@ -84,7 +84,7 @@ namespace WorldGen
             StringBuilder builder = new StringBuilder(36);
 
             // decide how many syllables to generate
-            int numSyllables = rand.Next(maxReadOnlyConsonants) + 1;
+            int numSyllables = _rand.GenerateInt(maxReadOnlyConsonants) + 1;
 
             // Get consonant totals
             int numStartConsonants = 0;
@@ -102,18 +102,18 @@ namespace WorldGen
             {
                 // start consonant
                 if ((numStartConsonants > 0) 
-                    && (rand.NextDouble() <= startConsonantChance))
+                    && (_rand.GenerateDouble() <= startConsonantChance))
                 {
                     builder.Append(PickConsonant(numStartConsonants, nonsenseStartConsonants));
                 }
 
                 // vowel
-                string vowel = nonsenseVowels[rand.Next(nonsenseVowels.Length)];
+                string vowel = nonsenseVowels[_rand.GenerateInt(nonsenseVowels.Length)];
                 builder.Append(vowel);
 
                 // end consonant
                 if ((numEndConsonants > 0)
-                    && (rand.NextDouble() <= endConsonantChance))
+                    && (_rand.GenerateDouble() <= endConsonantChance))
                 {
                     builder.Append(PickConsonant(numEndConsonants, nonsenseEndConsonants));
                 }
@@ -135,7 +135,7 @@ namespace WorldGen
         {
             string cons;
 
-            int consIndex = rand.Next(totalNum);
+            int consIndex = _rand.GenerateInt(totalNum);
             if (nonsenseConsonants != null)
             {
                 if (supplement != null)

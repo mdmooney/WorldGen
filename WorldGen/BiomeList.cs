@@ -12,7 +12,7 @@ namespace WorldGen
     class BiomeList
     {
         public List<Biome> Biomes { get; private set; }
-        private static Random rand = new Random();
+        private static RandomGen rand = new RandomGen();
         private Stream _defsStream;
 
         private BiomeList()
@@ -128,7 +128,7 @@ namespace WorldGen
         {
             var validBiomes = Biomes.Where(x => x.TemperatureRange.Contains(temperature)
                                                 && x.HumidityRange.Contains(humidity));
-            int i = rand.Next(validBiomes.Count());
+            int i = rand.GenerateInt(validBiomes.Count());
             return validBiomes.ElementAt(i);
         }
     }

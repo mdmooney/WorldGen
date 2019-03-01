@@ -15,7 +15,7 @@ namespace WorldGen
         public List<Coords> Hexes = new List<Coords>();
         public List<Coords> ShoreHexes = new List<Coords>();
         private AffinityMap _affinities;
-        private static Random _rand = new Random();
+        private static RandomGen _rand = new RandomGen();
         public int Count { get { return Hexes.Count; } }
 
         public AffinityMap Affinities
@@ -34,12 +34,12 @@ namespace WorldGen
 
         public Coords RandomCoords()
         {
-            return new Coords(Hexes[_rand.Next(Hexes.Count)]);
+            return new Coords(Hexes[_rand.GenerateInt(Hexes.Count)]);
         }
 
         public System.Collections.IEnumerable CoordsFromRandomPoint()
         {
-            int r = _rand.Next(Hexes.Count);
+            int r = _rand.GenerateInt(Hexes.Count);
             int i = r + 1;
 
             while (i != r)

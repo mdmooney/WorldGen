@@ -17,7 +17,7 @@ namespace WorldGen
         private Dictionary<string, int> _affinities;
         private AspectGlossary _aspectGlossary = AspectGlossary.GetInstance();
 
-        private static Random _rand = new Random();
+        private static RandomGen _rand = new RandomGen();
 
         public List<string> AspectList
         {
@@ -143,13 +143,13 @@ namespace WorldGen
         public void ResolveWildcard(string pool, int affinity)
         {
             var poolList = _aspectGlossary.GetPool(pool).ToList();
-            int i = _rand.Next(poolList.Count);
+            int i = _rand.GenerateInt(poolList.Count);
             string aspect = poolList[i];
 
             // make sure we're not overwriting an existing affinity
             while (GetAffinity(aspect) != 0)
             {
-                i = _rand.Next(poolList.Count);
+                i = _rand.GenerateInt(poolList.Count);
                aspect = poolList[i];
             }
 

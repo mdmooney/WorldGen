@@ -64,6 +64,7 @@
     <Compile Include="HexExpander.cs" />
     <Compile Include="HumidityExpander.cs" />
     <Compile Include="InvalidAspectException.cs" />
+    <Compile Include="IRandomGen.cs" />
     <Compile Include="Landmass.cs" />
     <Compile Include="LandmassExpander.cs" />
     <Compile Include="LayeredExpander.cs" />
@@ -75,6 +76,7 @@
     <Compile Include="Race.cs" />
     <Compile Include="RaceGen.cs" />
     <Compile Include="RacePrototype.cs" />
+    <Compile Include="RandomGen.cs" />
     <Compile Include="RandomTable.cs" />
     <Compile Include="River.cs" />
     <Compile Include="RiverGen.cs" />

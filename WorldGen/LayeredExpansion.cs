@@ -41,7 +41,7 @@ namespace WorldGen
         /// </summary>
         public double UpperProportionBound{ get; private set; }
 
-        private static Random _rand = new Random();
+        private static RandomGen _rand = new RandomGen();
 
         /**
          * <summary>
@@ -90,7 +90,7 @@ namespace WorldGen
             int hexesToModify = ValidCoords.Count;
             for (int i = 0; i < passes; i++)
             {
-                double proportionThisRound = _rand.NextDouble();
+                double proportionThisRound = _rand.GenerateDouble();
                 proportionThisRound *= (UpperProportionBound - LowerProportionBound);
                 proportionThisRound += LowerProportionBound;
 

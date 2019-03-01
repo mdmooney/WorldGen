@@ -10,7 +10,7 @@ namespace WorldGen
     {
         private List<Tuple<int, T>> _table;
         private int _max;
-        private Random _rand = new Random();
+        private RandomGen _rand = new RandomGen();
 
         public RandomTable()
         {
@@ -29,7 +29,7 @@ namespace WorldGen
             if (_table.Count == 0) return default(T);
             if (_table.Count == 1) return _table.First().Item2;
 
-            int r = _rand.Next(_max + 1);
+            int r = _rand.GenerateInt(_max + 1);
 
             // modified binary search to get closest match
             int low = 0;

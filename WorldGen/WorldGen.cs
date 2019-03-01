@@ -18,7 +18,7 @@ namespace WorldGen
     {
         private World _world;
 
-        private Random rnd;
+        private RandomGen _rand;
 
         private RaceGen _raceGen;
 
@@ -56,7 +56,7 @@ namespace WorldGen
          */
         public WorldGenerator(World world)
         {
-            rnd = new Random();
+            _rand = new RandomGen();
             _world = world;
             int worldTotal = (_world.Map.Width * _world.Map.Height);
             double overallTotalDec = (double)worldTotal;
@@ -64,7 +64,7 @@ namespace WorldGen
             int remainingHexes = totalLandHexes;
 
             var landmasses = new List<Landmass>();
-            int numLandmasses = rnd.Next(1, MAX_LANDMASSES);
+            int numLandmasses = _rand.GenerateInt(1, MAX_LANDMASSES);
 
             for (int i = 0; i < numLandmasses; i++)
             {
@@ -72,7 +72,7 @@ namespace WorldGen
                 int massHexes;
                 if (i != numLandmasses - 1)
                 {
-                    massHexes = rnd.Next(1, remainingHexes / 2);
+                    massHexes = _rand.GenerateInt(1, remainingHexes / 2);
                 }
                 else
                 {
@@ -130,7 +130,7 @@ namespace WorldGen
             // Elevation
             // Pick a number of passes; a range of the total number of
             // elements in the enum works best
-            int passes = rnd.Next(1, 5);
+            int passes = _rand.GenerateInt(1, 5);
             List<Coords> eleHexes = new List<Coords>(mass.Hexes);
             HeightExpander hEx = new HeightExpander(_world.Map);
             LayeredExpansion layered = new LayeredExpansion(hEx, eleHexes, 0.6, 0.8);
@@ -143,7 +143,7 @@ namespace WorldGen
             {
                 if (remainingHexes == 1)
                     break;
-                int riverLength = rnd.Next(2, remainingHexes);
+                int riverLength = _rand.GenerateInt(2, remainingHexes);
                 RiverGen rgen = new RiverGen(_world, mass, riverLength);
                 int genLength = rgen.Generate();
                 if (genLength > 1)
@@ -159,7 +159,7 @@ namespace WorldGen
             SetTemperatures();
 
             // Humidity
-            passes = rnd.Next(1, 5);
+            passes = _rand.GenerateInt(1, 5);
             List<Coords> humiHexes = new List<Coords>(mass.Hexes);
             HumidityExpander humEx = new HumidityExpander(_world.Map);
             layered = new LayeredExpansion(humEx, humiHexes, 0.6, 0.8);
@@ -175,7 +175,7 @@ namespace WorldGen
                 int expandThisRound = bioHexes.Count;
                 if (expandThisRound > tenPercent)
                 {
-                    double fraction = rnd.NextDouble() / 2.0;
+                    double fraction = _rand.GenerateDouble() / 2.0;
                     expandThisRound = (int)(expandThisRound * fraction);
                 }
 

@@ -12,7 +12,7 @@ namespace WorldGen
         private Landmass _landmass;
         private World _world;
         private HashSet<Coords> _allCoords;
-        private static Random _rand = new Random();
+        private static RandomGen _rand = new RandomGen();
         private int _requestedLength;
 
         public River GenRiver { get {return _river;} }
@@ -81,7 +81,7 @@ namespace WorldGen
                 return false;
 
             var adjList = adj.ToList();
-            var candidate = adjList[_rand.Next(adjList.Count)];
+            var candidate = adjList[_rand.GenerateInt(adjList.Count)];
             
 
             if (_world.Map.IsWaterAt(candidate.Value))

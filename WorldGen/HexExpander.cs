@@ -23,7 +23,7 @@ namespace WorldGen
         protected int _remainingHexes;
         protected List<Coords> _validHexes;
 
-        private static Random rnd = new Random();
+        private static RandomGen _rand = new RandomGen();
 
         private bool _finalizeEarly = false;
 
@@ -106,7 +106,7 @@ namespace WorldGen
             while (!placedSeed 
                     && (attempts < totalValidHexes))
             {
-                int i = rnd.Next(totalValidHexes);
+                int i = _rand.GenerateInt(totalValidHexes);
                 Coords seedCoords = validHexes[i];
                 if (CanExpandFirst(seedCoords))
                 {
@@ -139,7 +139,7 @@ namespace WorldGen
                 }
 
                 // Pick a hex to expand at random from the unexpanded list
-                Coords startPoint = unexpanded[rnd.Next(unexpanded.Count)];
+                Coords startPoint = unexpanded[_rand.GenerateInt(unexpanded.Count)];
                 Dictionary<Hex.Side, Coords> adj = GetFilteredAdjacency(startPoint);
 
                 // Determine at random how many hexes will be affected in this expansion
@@ -149,7 +149,7 @@ namespace WorldGen
 
                 if (contigs.Count > 0)
                 {
-                    Hex.Side placeSide = contigs[rnd.Next(contigs.Count)];
+                    Hex.Side placeSide = contigs[_rand.GenerateInt(contigs.Count)];
                     int count = 0;
 
                     // Try to modify as many contiguous hexes as we randomly determined we would
@@ -280,7 +280,7 @@ namespace WorldGen
             while ((mod < Hex.SIDES)
                     && (ratio > 0))
             {
-                double comp = rnd.NextDouble();
+                double comp = _rand.GenerateDouble();
                 if (comp <= ratio)
                 {
                     mod++;
@@ -299,7 +299,7 @@ namespace WorldGen
          */
         protected virtual int RollBaseExpansion(int adjCount)
         {
-            return rnd.Next(adjCount);
+            return _rand.GenerateInt(adjCount);
         }
 
         /** <summary>
