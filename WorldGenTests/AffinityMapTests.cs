@@ -11,12 +11,14 @@ namespace WorldGen.Tests
     [TestClass()]
     public class AffinityMapTests
     {
+        private static IRandomGen _rand = new MockRandomGen();
+
         // Simple setting and getting of affinities
         [TestMethod()]
         public void SetGetAffinityTest()
         {
             string testAspect = "fire";
-            var am = new AffinityMap();
+            var am = new AffinityMap(_rand);
 
             // ensure we start with an empty map
             Assert.AreEqual(0, am.Count);
@@ -43,7 +45,7 @@ namespace WorldGen.Tests
         public void MinMaxAffinityTest()
         {
             string testAspect = "fire";
-            var am = new AffinityMap();
+            var am = new AffinityMap(_rand);
 
             // upper bounding
             am.SetAffinity(testAspect, 10);
@@ -70,7 +72,7 @@ namespace WorldGen.Tests
         public void IntersectAffinitiesTest()
         {
             List<string> aspects = new List<string>() { "earth", "air", "fire" };
-            var am = new AffinityMap();
+            var am = new AffinityMap(_rand);
             am.MaximizeAffinity("earth");
             am.MinimizeAffinity("air");
             am.MaximizeAffinity("fire");
@@ -88,7 +90,7 @@ namespace WorldGen.Tests
         public void SetGetInvalidAffinityTest()
         {
             string invalidAspect = "this-is-not-a-real-aspect";
-            var am = new AffinityMap();
+            var am = new AffinityMap(_rand);
 
             // ensure we start with an empty map
             Assert.AreEqual(0, am.Count);
@@ -140,8 +142,8 @@ namespace WorldGen.Tests
         {
             int max = AffinityMap.MaxAffinity;
             int min = AffinityMap.MinAffinity;
-            AffinityMap a = new AffinityMap();
-            AffinityMap b = new AffinityMap();
+            AffinityMap a = new AffinityMap(_rand);
+            AffinityMap b = new AffinityMap(_rand);
 
             // first try empty maps
             var newMap = a.CombineWith(b);
@@ -184,8 +186,8 @@ namespace WorldGen.Tests
         {
             int max = AffinityMap.MaxAffinity;
             int min = AffinityMap.MinAffinity;
-            AffinityMap a = new AffinityMap();
-            AffinityMap b = new AffinityMap();
+            AffinityMap a = new AffinityMap(_rand);
+            AffinityMap b = new AffinityMap(_rand);
 
             // Get similarity of empty maps (should be 0)
             int sim = a.GetSimilarityTo(b);
@@ -228,7 +230,7 @@ namespace WorldGen.Tests
         public void ToStringTest()
         {
             // empty map
-            AffinityMap am = new AffinityMap();
+            AffinityMap am = new AffinityMap(_rand);
             string str = am.ToString();
             string expected = "";
             Assert.AreEqual(expected, str);

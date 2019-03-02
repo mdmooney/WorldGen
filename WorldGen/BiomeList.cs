@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Xml.Linq;
 
@@ -12,18 +10,20 @@ namespace WorldGen
     class BiomeList
     {
         public List<Biome> Biomes { get; private set; }
-        private static RandomGen rand = new RandomGen();
+        private IRandomGen _rand;
         private Stream _defsStream;
 
-        private BiomeList()
+        private BiomeList(IRandomGen rand)
         {
+            _rand = rand;
             Biomes = new List<Biome>();
             _defsStream = new FileStream("biome_defs.xml", FileMode.Open, FileAccess.Read, FileShare.Read);
             BiomeSetup();
         }
 
-        public BiomeList(Stream stream)
+        public BiomeList(IRandomGen rand, Stream stream)
         {
+            _rand = rand;
             Biomes = new List<Biome>();
             _defsStream = stream;
             BiomeSetup();
@@ -83,7 +83,7 @@ namespace WorldGen
                 }
 
                 Color biomeColor = Color.FromArgb(0xff, colorBytes[0], colorBytes[1], colorBytes[2]);
-                AffinityMap biomeAffinities = new AffinityMap();
+                AffinityMap biomeAffinities = new AffinityMap(_rand);
 
                 try
                 {
@@ -128,7 +128,8 @@ namespace WorldGen
         {
             var validBiomes = Biomes.Where(x => x.TemperatureRange.Contains(temperature)
                                                 && x.HumidityRange.Contains(humidity));
-            int i = rand.GenerateInt(validBiomes.Count());
+            if (validBiomes.Count() == 0) return null;
+            int i = _rand.GenerateInt(validBiomes.Count());
             return validBiomes.ElementAt(i);
         }
     }

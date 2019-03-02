@@ -11,7 +11,7 @@ namespace WorldGen
         private BiomeList _biomes;
         private Biome _currentBiome;
 
-        public BiomeExpander(HexMap map, BiomeList biomes) : base(map)
+        public BiomeExpander(IRandomGen rand, HexMap map, BiomeList biomes) : base(rand, map)
         {
             _biomes = biomes;
         }

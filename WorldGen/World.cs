@@ -16,6 +16,7 @@ namespace WorldGen
 
         public int Width { get; private set; }
         public int Height { get; private set; }
+        public IRandomGen RandomGenerator { get; private set; }
 
         private BiomeList _biomes;
         public BiomeList Biomes {
@@ -23,7 +24,7 @@ namespace WorldGen
             {
                 if (_biomes == null)
                 {
-                    _biomes = new BiomeList(new FileStream("biome_defs.xml", FileMode.Open, FileAccess.Read, FileShare.Read));
+                    _biomes = new BiomeList(RandomGenerator, new FileStream("biome_defs.xml", FileMode.Open, FileAccess.Read, FileShare.Read));
                 }
                 return _biomes;
             }
@@ -33,9 +34,10 @@ namespace WorldGen
         {
             Width = width;
             Height = height;
-            Map = new HexMap(width, height);
+            Map = new HexMap(RandomGenerator, width, height);
             _demographics = new Dictionary<Coords, Demographics>();
             Rivers = new List<River>();
+            RandomGenerator = new RandomGen();
         }
 
         public Demographics DemographicsAt(Coords coords)

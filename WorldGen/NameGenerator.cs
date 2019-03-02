@@ -57,9 +57,9 @@ namespace WorldGen
          * Sole constructor for NameGenerator().
          * </summary>
          */
-        public NameGenerator()
+        public NameGenerator(RandomGen rand)
         {
-            _rand = new RandomGen();
+            _rand = rand;
         }
 
         /** <summary>

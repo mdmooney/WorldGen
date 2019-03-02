@@ -18,7 +18,7 @@
          * </summary>
          * <param name="map">The HexMap to update.</param>
          */
-        public HeightExpander(HexMap map) : base(map) { }
+        public HeightExpander(IRandomGen rand, HexMap map) : base(rand, map) { }
 
         /**
          * <summary>

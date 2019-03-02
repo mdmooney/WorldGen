@@ -168,7 +168,7 @@ namespace WorldGen
                     }
                     else
                     {
-                        _affinities = new AffinityMap();
+                        _affinities = new AffinityMap(new RandomGen());
                     }
 
                     switch (Elevation)
@@ -331,27 +331,6 @@ namespace WorldGen
         public bool HasRiver()
         {
             return MainRiverSegment != null;
-        }
-
-        /**
-         * <summary>
-         * Method to display a Hex as a char, used for console display.
-         * </summary>
-         * <returns>
-         * A char representing the Hex on a console map.
-         * </returns>
-         */
-        public char CharDisplay()
-        {
-            switch (Type)
-            {
-                case HexType.Ocean:
-                    return '~';
-                case HexType.Land:
-                    return '\u2592';
-                default:
-                    return '?';
-            }
         }
 
         /**

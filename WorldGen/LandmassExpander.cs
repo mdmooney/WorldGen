@@ -15,7 +15,7 @@
          * Sole constructor just takes a map on which to generate landmasses.
          * </summary>
          */
-        public LandmassExpander(HexMap map) : base(map)
+        public LandmassExpander(IRandomGen rand, HexMap map) : base(rand, map)
         {}
 
         /**

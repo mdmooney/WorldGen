@@ -53,7 +53,7 @@ namespace WorldGen
         private void GenerateNewWorld(int width, int height)
         {
             _world = new World(width, height);
-            _worldGen = new WorldGenerator(_world);
+            _worldGen = new WorldGenerator(_world, _world.RandomGenerator);
             _worldGen.Generate();
         }
 

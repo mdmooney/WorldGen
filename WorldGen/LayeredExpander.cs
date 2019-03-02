@@ -38,7 +38,7 @@ namespace WorldGen
          * </summary>
          * <param name="map">The HexMap to update.</param>
          */
-        public LayeredExpander(HexMap map) : base(map)
+        public LayeredExpander(IRandomGen rand, HexMap map) : base(rand, map)
         {
             _alreadyModified = new List<Coords>();
         }

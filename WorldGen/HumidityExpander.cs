@@ -14,7 +14,7 @@ namespace WorldGen
          * </summary>
          * <param name="map">The HexMap to update.</param>
          */
-        public HumidityExpander(HexMap map) : base(map) { }
+        public HumidityExpander(IRandomGen rand, HexMap map) : base(rand, map) { }
 
         /**
          * <summary>

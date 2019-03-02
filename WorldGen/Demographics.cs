@@ -10,6 +10,7 @@ namespace WorldGen
     {
         public enum Population
         {
+            None,
             Low,
             LowMid,
             Mid,
@@ -21,7 +22,12 @@ namespace WorldGen
 
         public Dictionary<Race, Population> Populations
         {
-            get { return _populations; }
+            get { return new Dictionary<Race, Population>(_populations); }
+        }
+
+        public Population this[Race r]
+        {
+            get { return GetPopulationFor(r); }
         }
 
         public Demographics()
@@ -37,6 +43,13 @@ namespace WorldGen
             {
                 _populations[race]++;
             }
+        }
+
+        public Population GetPopulationFor(Race race)
+        {
+            if (!_populations.ContainsKey(race))
+                return Population.None;
+            return _populations[race];
         }
 
         public bool ContainsRace(Race race)

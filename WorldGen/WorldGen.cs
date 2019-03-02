@@ -18,7 +18,7 @@ namespace WorldGen
     {
         private World _world;
 
-        private RandomGen _rand;
+        private IRandomGen _rand;
 
         private RaceGen _raceGen;
 
@@ -54,9 +54,9 @@ namespace WorldGen
          * </summary>
          * <param name="map">HexMap to generate a world in.</param>
          */
-        public WorldGenerator(World world)
+        public WorldGenerator(World world, IRandomGen rand)
         {
-            _rand = new RandomGen();
+            _rand = rand;
             _world = world;
             int worldTotal = (_world.Map.Width * _world.Map.Height);
             double overallTotalDec = (double)worldTotal;
@@ -68,7 +68,7 @@ namespace WorldGen
 
             for (int i = 0; i < numLandmasses; i++)
             {
-                Landmass landmass = new Landmass();
+                Landmass landmass = new Landmass(rand);
                 int massHexes;
                 if (i != numLandmasses - 1)
                 {
@@ -102,7 +102,7 @@ namespace WorldGen
             {
                 Landmass mass = _world.Map.Landmasses[i];
                 List<Coords> allCoords = _world.Map.GetAllCoords();
-                LandmassExpander lEx = new LandmassExpander(_world.Map);
+                LandmassExpander lEx = new LandmassExpander(_rand, _world.Map);
                 mass.Hexes = lEx.Expand(allCoords, mass.TotalHexes);
                 mass.TotalHexes = mass.Hexes.Count;
 
@@ -132,8 +132,8 @@ namespace WorldGen
             // elements in the enum works best
             int passes = _rand.GenerateInt(1, 5);
             List<Coords> eleHexes = new List<Coords>(mass.Hexes);
-            HeightExpander hEx = new HeightExpander(_world.Map);
-            LayeredExpansion layered = new LayeredExpansion(hEx, eleHexes, 0.6, 0.8);
+            HeightExpander hEx = new HeightExpander(_rand, _world.Map);
+            LayeredExpansion layered = new LayeredExpansion(_rand, hEx, eleHexes, 0.6, 0.8);
             layered.Expand(passes);
 
             // Rivers
@@ -144,7 +144,7 @@ namespace WorldGen
                 if (remainingHexes == 1)
                     break;
                 int riverLength = _rand.GenerateInt(2, remainingHexes);
-                RiverGen rgen = new RiverGen(_world, mass, riverLength);
+                RiverGen rgen = new RiverGen(_rand, _world, mass, riverLength);
                 int genLength = rgen.Generate();
                 if (genLength > 1)
                 {
@@ -161,8 +161,8 @@ namespace WorldGen
             // Humidity
             passes = _rand.GenerateInt(1, 5);
             List<Coords> humiHexes = new List<Coords>(mass.Hexes);
-            HumidityExpander humEx = new HumidityExpander(_world.Map);
-            layered = new LayeredExpansion(humEx, humiHexes, 0.6, 0.8);
+            HumidityExpander humEx = new HumidityExpander(_rand, _world.Map);
+            layered = new LayeredExpansion(_rand, humEx, humiHexes, 0.6, 0.8);
             layered.Expand(passes);
 
             // Biomes
@@ -179,7 +179,7 @@ namespace WorldGen
                     expandThisRound = (int)(expandThisRound * fraction);
                 }
 
-                bioEx = new BiomeExpander(_world.Map, _world.Biomes);
+                bioEx = new BiomeExpander(_rand, _world.Map, _world.Biomes);
                 var placedCoords = bioEx.Expand(bioHexes, expandThisRound);
                 bioHexes.RemoveAll(x => placedCoords.Contains(x));
             }

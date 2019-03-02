@@ -33,9 +33,9 @@ namespace WorldGen
         // List of landmasses
         public List<Landmass> Landmasses { get; set; }
 
-        private static RandomGen _rand = new RandomGen();
+        private IRandomGen _rand;
 
-        // ------------ Getters ------------
+        // ------------ Properties ------------
 
         /**
          * <summary>
@@ -70,11 +70,13 @@ namespace WorldGen
         * Constructor for HexMap requires width (number of tiles in each row)
         * and height (number of tiles in each column).
         * </summary>
+        * <param name="rand">The random number generator to be used by this object.</param>
         * <param name="width">Number of Hex objects in each row of the map.</param>
         * <param name="height">Number of Hex objects in each column of the map.</param>
         */
-        public HexMap(int width, int height)
+        public HexMap(IRandomGen rand, int width, int height)
         {
+            _rand = rand;
             _map = new Hex[width, height];
             for (int i = 0; i < _map.GetLength(0); i++)
             {
@@ -676,7 +678,7 @@ namespace WorldGen
                     }
                 }
 
-                AffinityMap newAffinityMap = new AffinityMap();
+                AffinityMap newAffinityMap = new AffinityMap(_rand);
 
                 foreach (var aspect in totalAffinityScore.Keys)
                 {
@@ -707,41 +709,6 @@ namespace WorldGen
         {
             int r = _rand.GenerateInt(Landmasses.Count);
             return Landmasses[r];
-        }
-
-        /**
-         * <summary>
-         * ToString override to produce a (somewhat) console-friendly basic
-         * representation of the HexMap.
-         * </summary>
-         * <remarks>
-         * Prints the map on its side (such that north is on the left side of the map).
-         * </remarks>
-         * <returns>
-         * A simple console representation of this HexMap, complete with newlines
-         * and a "compass rose".
-         * </returns>
-         */
-        public override string ToString()
-        {
-            string rv = "";
-            for (int i = (_map.GetLength(0) - 1); i >= 0; i--)
-            {
-                string add = "";
-                if (i % 2 != 0)
-                {
-                    add += " ";
-                }
-                for (int j = 0; j < _map.GetLength(1); j++)
-                {
-                    char disp = _map[i, j].CharDisplay();
-                    add += " " + disp;
-                }
-                rv += add + "\n";
-            }
-
-            rv += "<-+";
-            return rv;
         }
     }
 }

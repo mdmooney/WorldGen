@@ -52,7 +52,12 @@
     <Compile Include="AspectGlossaryTests.cs" />
     <Compile Include="BiomeListTests.cs" />
     <Compile Include="BiomeTests.cs" />
+    <Compile Include="CoordsTests.cs" />
+    <Compile Include="DemographicsTests.cs" />
+    <Compile Include="HexMapTests.cs" />
+    <Compile Include="HexTests.cs" />
     <Compile Include="MockBiomeDefStream.cs" />
+    <Compile Include="MockRandomGen.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

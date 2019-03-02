@@ -10,10 +10,11 @@ namespace WorldGen
     {
         private List<Tuple<int, T>> _table;
         private int _max;
-        private RandomGen _rand = new RandomGen();
+        private IRandomGen _rand;
 
-        public RandomTable()
+        public RandomTable(IRandomGen rand)
         {
+            _rand = rand;
             _table = new List<Tuple<int, T>>();
             _max = 0;
         }

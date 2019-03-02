@@ -12,13 +12,14 @@ namespace WorldGen
         private Landmass _landmass;
         private World _world;
         private HashSet<Coords> _allCoords;
-        private static RandomGen _rand = new RandomGen();
+        private IRandomGen _rand;
         private int _requestedLength;
 
         public River GenRiver { get {return _river;} }
 
-        public RiverGen(World world, Landmass landmass, int length)
+        public RiverGen(IRandomGen rand, World world, Landmass landmass, int length)
         {
+            _rand = rand;
             _world = world;
             _landmass = landmass;
             _allCoords = new HashSet<Coords>();

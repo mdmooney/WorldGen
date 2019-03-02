@@ -60,7 +60,7 @@ namespace WorldGen
                 return null;
 
             var races = new List<Race>();
-            var raceTable = new RandomTable<Race>();
+            var raceTable = new RandomTable<Race>(new RandomGen());
             foreach (var prototype in _prototypes.Values)
             {
                 Race race = prototype.FinalizeAgainstMap(massAffinity);

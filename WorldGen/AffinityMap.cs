@@ -17,7 +17,7 @@ namespace WorldGen
         private Dictionary<string, int> _affinities;
         private AspectGlossary _aspectGlossary = AspectGlossary.GetInstance();
 
-        private static RandomGen _rand = new RandomGen();
+        private IRandomGen _rand;
 
         public List<string> AspectList
         {
@@ -35,13 +35,15 @@ namespace WorldGen
             }
         }
 
-        public AffinityMap()
+        public AffinityMap(IRandomGen rand)
         {
+            _rand = rand;
             _affinities = new Dictionary<string, int>();
         }
 
         public AffinityMap(AffinityMap other)
         {
+            _rand = other._rand;
             _affinities = new Dictionary<string,int>(other._affinities);
         }
 
@@ -107,7 +109,7 @@ namespace WorldGen
             var theseAspects = _affinities.Keys;
             var commonMembers = theseAspects.Intersect(poolMembers);
 
-            AffinityMap newMap = new AffinityMap();
+            AffinityMap newMap = new AffinityMap(_rand);
             foreach (var member in commonMembers)
             {
                 newMap.SetAffinity(member, _affinities[member]);
@@ -118,7 +120,7 @@ namespace WorldGen
 
         public string SelectAspectByAffinity()
         {
-            var randomTable = new RandomTable<string>();
+            var randomTable = new RandomTable<string>(_rand);
 
             foreach (var kvp in _affinities.ToList())
             {
@@ -163,7 +165,7 @@ namespace WorldGen
 
         public AffinityMap CombineWith(AffinityMap other)
         {
-            AffinityMap combined = new AffinityMap();
+            AffinityMap combined = new AffinityMap(_rand);
             foreach (var aspect in _affinities.Keys)
             {
                 int otherAffinity = other.GetAffinity(aspect);

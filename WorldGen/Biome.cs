@@ -32,7 +32,7 @@ namespace WorldGen
             TemperatureRange = new HashSet<Hex.TemperatureLevel>();
             HumidityRange= new HashSet<Hex.HumidityLevel>();
             BiomeColor = Colors.Beige;
-            Affinities = new AffinityMap();
+            Affinities = new AffinityMap(new RandomGen());
         }
 
         public Biome(string name, Color color) : this(name)

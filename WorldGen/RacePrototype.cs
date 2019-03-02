@@ -16,7 +16,7 @@ namespace WorldGen
 
         public RacePrototype(Name name)
         {
-            _affinities = new AffinityMap();
+            _affinities = new AffinityMap(new RandomGen());
             _wildcards = new Stack<Tuple<string, int>>();
             _name = name;
         }

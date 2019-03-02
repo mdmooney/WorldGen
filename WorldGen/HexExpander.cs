@@ -23,7 +23,7 @@ namespace WorldGen
         protected int _remainingHexes;
         protected List<Coords> _validHexes;
 
-        private static RandomGen _rand = new RandomGen();
+        private IRandomGen _rand;
 
         private bool _finalizeEarly = false;
 
@@ -69,11 +69,12 @@ namespace WorldGen
         /**
          * <summary>
          * Sole constructor of a HexExpander just takes the HexMap which will be
-         * altered by the hex expansion.
+         * altered by the hex expansion, and a random number generator.
          * </summary>
          */
-        protected HexExpander(HexMap map)
+        protected HexExpander(IRandomGen rand, HexMap map)
         {
+            _rand = rand;
             _map = map;
         }
 

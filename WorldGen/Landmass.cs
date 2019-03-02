@@ -15,8 +15,13 @@ namespace WorldGen
         public List<Coords> Hexes = new List<Coords>();
         public List<Coords> ShoreHexes = new List<Coords>();
         private AffinityMap _affinities;
-        private static RandomGen _rand = new RandomGen();
+        private IRandomGen _rand;
         public int Count { get { return Hexes.Count; } }
+
+        public Landmass(IRandomGen rand)
+        {
+            _rand = rand;
+        }
 
         public AffinityMap Affinities
         {

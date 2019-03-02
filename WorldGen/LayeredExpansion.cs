@@ -41,7 +41,7 @@ namespace WorldGen
         /// </summary>
         public double UpperProportionBound{ get; private set; }
 
-        private static RandomGen _rand = new RandomGen();
+        private IRandomGen _rand;
 
         /**
          * <summary>
@@ -52,8 +52,9 @@ namespace WorldGen
          * <param name="hexExpander">HexExpander that will carry out expansion.</param>
          * <param name="validCoords">Coords that may be expanded in.</param>
          */
-        public LayeredExpansion(LayeredExpander layeredExpander, List<Coords> validCoords)
+        public LayeredExpansion(IRandomGen rand, LayeredExpander layeredExpander, List<Coords> validCoords)
         {
+            _rand = rand;
             Expander = layeredExpander;
             ValidCoords = validCoords;
         }
@@ -68,9 +69,9 @@ namespace WorldGen
          * <param name="lowerProportionBound">Lower bound of hex proportioning.</param>
          * <param name="upperProportionBound">Upper bound of hex proportioning.</param>
          */
-        public LayeredExpansion(LayeredExpander layeredExpander, List<Coords> validCoords,
-            double lowerProportionBound, double upperProportionBound)
-            : this (layeredExpander, validCoords)
+        public LayeredExpansion(IRandomGen rand, LayeredExpander layeredExpander,
+            List<Coords> validCoords, double lowerProportionBound, double upperProportionBound)
+            : this (rand, layeredExpander, validCoords)
         {
             LowerProportionBound = lowerProportionBound;
             UpperProportionBound = upperProportionBound;
